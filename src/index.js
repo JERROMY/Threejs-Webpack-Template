@@ -10,6 +10,9 @@ const threeMain = new ThreeMain()
 
 
 
+
+
+
 if (process.env.NODE_ENV === 'production') {
     console.log('Production mode')
 }else{

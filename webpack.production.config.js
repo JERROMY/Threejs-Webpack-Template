@@ -48,6 +48,10 @@ module.exports = {
                 type: 'asset/source'
             },
             {
+                test: /\.(glsl|vs|fs|vert|frag)$/,
+                type: 'asset/source',
+            },
+            {
                 test: /\.css$/,
                 use: [
                     MiniCssExtractPlugin.loader, 'css-loader'

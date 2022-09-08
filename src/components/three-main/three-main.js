@@ -2,6 +2,10 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 
+//Shader
+import BasicVS from './shaders/basic/basicColor.vert'
+import BasicFS from './shaders/basic/basicColor.frag'
+
 class ThreeMain {
 
     //camera
@@ -16,9 +20,31 @@ class ThreeMain {
 
     controls
 
+    B_VS = BasicVS
+    B_FS = BasicFS
+
+    
+
     constructor() {
 
+        console.log("=========================")
+        //console.log(this.B_VS)
+
         console.log("Three JS Ready")
+
+        this.shaderMat = new THREE.RawShaderMaterial( {
+    
+            //uniforms: this.uniforms,
+            vertexShader: this.B_VS,
+            fragmentShader: this.B_FS,
+    
+            //blending: THREE.AdditiveBlending,
+            side:THREE.DoubleSide,
+            // depthTest: false,
+            // transparent: true,
+            vertexColors: true
+    
+        } )
         
 
         this.amL = new THREE.AmbientLight(0xffffff)
@@ -33,7 +59,7 @@ class ThreeMain {
         this.scene.add( this.amL )
 
         this.dirGeo = new THREE.BoxGeometry(4, 4, 4)
-        this.dirMat = new THREE.MeshPhongMaterial({ color: 0xff0000 })
+        this.dirMat = this.shaderMat
         this.dirCube = new THREE.Mesh(this.dirGeo, this.dirMat)
         this.scene.add(this.dirCube)
         this.dirCube.position.set(0, 0, 0)
