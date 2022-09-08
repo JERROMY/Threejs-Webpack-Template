@@ -24,6 +24,7 @@ module.exports = {
         filename: 'index.js',
         path: path.resolve( __dirname, './dist' ),
         publicPath: '',
+        //assetModuleFilename: 'images/[hash][ext][query]'
     },
     mode: 'development',
     devServer: {
@@ -52,8 +53,12 @@ module.exports = {
                 type: 'asset/source'
             },
             {
-                test: /\.(glsl|vs|fs|vert|frag)$/,
-                type: 'asset/source',
+                test: /\.(glsl|vs|fs|vert|frag)$/i,
+                type: 'asset/resource',
+                generator:
+                {
+                    filename: 'assets/shaders/[hash][ext]'
+                }
             },
             {
                 test: /\.css$/,

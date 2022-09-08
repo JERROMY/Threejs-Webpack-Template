@@ -24,6 +24,7 @@ module.exports = {
         filename: 'index.[contenthash].js',
         path: path.resolve( __dirname, './dist' ),
         publicPath: '',
+        assetModuleFilename: 'images/[hash][ext][query]'
     },
     mode: 'production',
     optimization: {
@@ -48,8 +49,12 @@ module.exports = {
                 type: 'asset/source'
             },
             {
-                test: /\.(glsl|vs|fs|vert|frag)$/,
-                type: 'asset/source',
+                test: /\.(glsl|vs|fs|vert|frag)$/i,
+                type: 'asset/resource',
+                generator:
+                {
+                    filename: 'assets/images/[hash][ext]'
+                }
             },
             {
                 test: /\.css$/,
