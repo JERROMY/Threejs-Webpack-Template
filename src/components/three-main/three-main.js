@@ -73,7 +73,7 @@ class ThreeMain {
 
     onWindowResize() {
 
-        console.log( this )
+        //console.log( this )
         //console.log( this.camera )
         this.camera.aspect = window.innerWidth / window.innerHeight
         this.camera.updateProjectionMatrix()
