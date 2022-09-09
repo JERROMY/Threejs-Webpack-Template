@@ -3,8 +3,11 @@ import Container3D from "./components/container-3d/container-3d"
 import './main.scss'
 
 //Shader
-import BasicVS from './components/three-main/shaders/basic/basicColor.vert'
-import BasicFS from './components/three-main/shaders/basic/basicColor.frag'
+// import BasicVS from './components/three-main/shaders/basic/basicColor.vert'
+// import BasicFS from './components/three-main/shaders/basic/basicColor.frag'
+
+const BasicVS = require('./components/three-main/shaders/basic/basicColor.vert')
+const BasicFS = require('./components/three-main/shaders/basic/basicColor.frag')
 
 
 const container3D = new Container3D()
