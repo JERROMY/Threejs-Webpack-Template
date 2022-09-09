@@ -56,7 +56,7 @@ class ThreeMain {
              1, // far
         );
 
-        //this.plane = new THREE.PlaneBufferGeometry(2, 2)
+        
         
 
         this.scene = new THREE.Scene()
@@ -67,10 +67,15 @@ class ThreeMain {
         this.dirCube = new THREE.Mesh(this.dirGeo, this.dirMat)
         this.scene.add(this.dirCube)
         this.dirCube.position.set(0, 0, 0)
-        this.dirCube.visible = true
+        this.dirCube.visible = false
 
         this.axistHelper = new THREE.AxesHelper( 5 )
         this.dirCube.add( this.axistHelper )
+
+
+        this.planeGeo = new THREE.PlaneGeometry(2, 2)
+        this.planeMesh = new THREE.Mesh( this.planeGeo, this.dirMat )
+        this.scene.add( this.planeMesh )
 
 
 
