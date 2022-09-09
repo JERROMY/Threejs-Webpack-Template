@@ -72,14 +72,19 @@ class ThreeMain {
 
         this.amL = new THREE.AmbientLight(0xffffff)
 
-        this.camera = new THREE.OrthographicCamera(
-            -1, // left
-             1, // right
-             1, // top
-            -1, // bottom
-            -1, // near,
-             1, // far
-        );
+        // this.camera = new THREE.OrthographicCamera(
+        //     -1, // left
+        //      1, // right
+        //      1, // top
+        //     -1, // bottom
+        //     -1, // near,
+        //      1, // far
+        // );
+
+        this.camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 40000 )
+        this.camera.position.z = 10 //0.35 0 1200
+        this.camera.position.x = 0
+        this.camera.position.y = 0
 
         
         
@@ -87,20 +92,20 @@ class ThreeMain {
         this.scene = new THREE.Scene()
         this.scene.add( this.amL )
 
-        this.dirGeo = new THREE.BoxGeometry(1, 1, 1)
+        this.dirGeo = new THREE.BoxGeometry(4, 4, 4)
         this.dirMat = this.shaderMat
         this.dirCube = new THREE.Mesh(this.dirGeo, this.dirMat)
         this.scene.add(this.dirCube)
         this.dirCube.position.set(0, 0, 0)
-        this.dirCube.visible = false
+        this.dirCube.visible = true
 
         this.axistHelper = new THREE.AxesHelper( 5 )
         this.dirCube.add( this.axistHelper )
 
 
-        this.planeGeo = new THREE.PlaneGeometry(2, 2)
-        this.planeMesh = new THREE.Mesh( this.planeGeo, this.shaderMat )
-        this.scene.add( this.planeMesh )
+        // this.planeGeo = new THREE.PlaneGeometry(2, 2)
+        // this.planeMesh = new THREE.Mesh( this.planeGeo, this.shaderMat )
+        // this.scene.add( this.planeMesh )
 
 
 
@@ -149,13 +154,14 @@ class ThreeMain {
         console.log( this.size.w + ' ' + this.size.h )
         //console.log( this )
         //console.log( this.camera )
-        //this.camera.aspect = window.innerWidth / window.innerHeight
-        //this.camera.updateProjectionMatrix()
-        
         this.size.asp = this.size.w / this.size.h
-        this.camera.left = -1 * this.size.asp
-        this.camera.right = 1 * this.size.asp
+        this.camera.aspect = this.size.asp
         this.camera.updateProjectionMatrix()
+        
+        // this.size.asp = this.size.w / this.size.h
+        // this.camera.left = -1 * this.size.asp
+        // this.camera.right = 1 * this.size.asp
+        // this.camera.updateProjectionMatrix()
 
 
 

@@ -17,6 +17,9 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
     vec2 uv = fragCoord.xy / iResolution.xy;
     uv.x *= iResolution.x / iResolution.y;
+
+    //uv = vUv;
+    //uv.x *= iResolution.x / iResolution.y;
  
     vec4 noise = texture2D(iChannel0, floor(uv * float(TILES)) / float(TILES));
     float p = 1.0 - mod(noise.r + noise.g + noise.b + iTime * float(TIMESCALE), 1.0);
@@ -32,5 +35,5 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 void main()
 {
     //gl_FragColor = vec4(0.0, 1.0, 1.0, 1.0);
-    mainImage( gl_FragColor, vUv * gl_FragCoord.xy );
+    mainImage( gl_FragColor, vUv * iResolution.xy );
 }
