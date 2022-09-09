@@ -17,8 +17,11 @@ class ThreeMain {
     controls
     size = {
         w: 0,
-        h: 0
+        h: 0,
+        asp: 0,
     }
+
+    
 
 
     constructor( threeData ) {
@@ -30,19 +33,41 @@ class ThreeMain {
 
         console.log("Three JS Ready")
 
-        this.shaderMat = new THREE.RawShaderMaterial( {
+        const rndTex = new THREE.TextureLoader().load( this.threeData.RndTex )
+        rndTex.magFilter = THREE.NearestFilter
+        rndTex.minFilter = THREE.NearestFilter;
+        rndTex.wrapS = THREE.RepeatWrapping
+        rndTex.wrapT = THREE.RepeatWrapping
+        this.threeData.BasicShaderUniforms.iResolution.value = new THREE.Vector3(1, 1, 1)
+        this.threeData.BasicShaderUniforms.iChannel0.value = rndTex
+
+        this.shaderMat = new THREE.ShaderMaterial( {
     
-            //uniforms: this.uniforms,
+            uniforms: this.threeData.BasicShaderUniforms,
             vertexShader: this.threeData.BasicVS,
             fragmentShader: this.threeData.BasicFS,
     
             //blending: THREE.AdditiveBlending,
-            side:THREE.DoubleSide,
+            //side:THREE.DoubleSide,
             // depthTest: false,
             // transparent: true,
-            vertexColors: true
+            // vertexColors: true
     
         } )
+
+        // this.shaderMat = new THREE.RawShaderMaterial( {
+    
+        //     uniforms: this.threeData.BasicShaderUniforms,
+        //     vertexShader: this.threeData.BasicVS,
+        //     fragmentShader: this.threeData.BasicFS,
+    
+        //     //blending: THREE.AdditiveBlending,
+        //     //side:THREE.DoubleSide,
+        //     // depthTest: false,
+        //     // transparent: true,
+        //     // vertexColors: true
+    
+        // } )
         
 
         this.amL = new THREE.AmbientLight(0xffffff)
@@ -74,7 +99,7 @@ class ThreeMain {
 
 
         this.planeGeo = new THREE.PlaneGeometry(2, 2)
-        this.planeMesh = new THREE.Mesh( this.planeGeo, this.dirMat )
+        this.planeMesh = new THREE.Mesh( this.planeGeo, this.shaderMat )
         this.scene.add( this.planeMesh )
 
 
@@ -93,8 +118,9 @@ class ThreeMain {
 
     }
 
-    animate(){
-        //console.log("animate")
+    animate( et ){
+        //console.log( et )
+        this.onUpdateShader( et )
         this.update()
         window.requestAnimationFrame( this.animate.bind( this ) )
     }
@@ -105,6 +131,13 @@ class ThreeMain {
 
     initEvent(){
         window.addEventListener( 'resize', this.onWindowResize.bind( this ) )
+    }
+
+    onUpdateShader( et ) {
+        const iTime = et * 0.001
+        //console.log( iTime )
+        //this.threeData.BasicShaderUniforms.iResolution.value.set(this.size.w, this.size.h)
+        this.threeData.BasicShaderUniforms.iTime.value = iTime
     }
 
     onWindowResize() {
@@ -119,9 +152,9 @@ class ThreeMain {
         //this.camera.aspect = window.innerWidth / window.innerHeight
         //this.camera.updateProjectionMatrix()
         
-        const aspectRatio = this.size.w / this.size.h
-        this.camera.left = -1 * aspectRatio
-        this.camera.right = 1 * aspectRatio
+        this.size.asp = this.size.w / this.size.h
+        this.camera.left = -1 * this.size.asp
+        this.camera.right = 1 * this.size.asp
         this.camera.updateProjectionMatrix()
 
 
