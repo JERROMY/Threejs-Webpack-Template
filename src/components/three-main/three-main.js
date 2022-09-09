@@ -15,6 +15,10 @@ class ThreeMain {
     dirGeo
 
     controls
+    size = {
+        w: 0,
+        h: 0
+    }
 
 
     constructor( threeData ) {
@@ -43,16 +47,22 @@ class ThreeMain {
 
         this.amL = new THREE.AmbientLight(0xffffff)
 
-        this.camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 40000 )
-        this.camera.position.z = 100 //0.35 0 1200
-        this.camera.position.x = 0
-        this.camera.position.y = 0
+        this.camera = new THREE.OrthographicCamera(
+            -1, // left
+             1, // right
+             1, // top
+            -1, // bottom
+            -1, // near,
+             1, // far
+        );
+
+        //this.plane = new THREE.PlaneBufferGeometry(2, 2)
         
 
         this.scene = new THREE.Scene()
         this.scene.add( this.amL )
 
-        this.dirGeo = new THREE.BoxGeometry(4, 4, 4)
+        this.dirGeo = new THREE.BoxGeometry(1, 1, 1)
         this.dirMat = this.shaderMat
         this.dirCube = new THREE.Mesh(this.dirGeo, this.dirMat)
         this.scene.add(this.dirCube)
@@ -73,6 +83,7 @@ class ThreeMain {
         this.controls = new OrbitControls( this.camera, this.renderer.domElement )
 
         this.initEvent()
+        this.onWindowResize()
         this.animate()
 
     }
