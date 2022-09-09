@@ -19,9 +19,12 @@ css-loader => MiniCssExtractPlugin.loader
 
 module.exports = {
 
-    entry: './src/index.js',
+    entry: {
+        'index':'./src/index.js',
+        'three-data':'./src/three-data.js',
+    },
     output: {
-        filename: 'index.js',
+        filename: '[name].js',
         path: path.resolve( __dirname, './dist' ),
         publicPath: '',
         //assetModuleFilename: 'images/[hash][ext][query]'
@@ -54,11 +57,11 @@ module.exports = {
             },
             {
                 test: /\.(glsl|vs|fs|vert|frag)$/i,
-                type: 'asset/resource',
-                generator:
-                {
-                    filename: 'assets/shaders/[hash][ext]'
-                }
+                type: 'asset/source',
+                // generator:
+                // {
+                //     filename: 'assets/shaders/[hash][ext]'
+                // }
             },
             {
                 test: /\.css$/,

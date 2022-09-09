@@ -2,10 +2,6 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 
-//Shader
-import BasicVS from './shaders/basic/basicColor.vert'
-import BasicFS from './shaders/basic/basicColor.frag'
-
 class ThreeMain {
 
     //camera
@@ -20,12 +16,10 @@ class ThreeMain {
 
     controls
 
-    B_VS = BasicVS
-    B_FS = BasicFS
 
-    
+    constructor( threeData ) {
 
-    constructor() {
+        this.threeData = threeData
 
         console.log("=========================")
         //console.log(this.B_VS)
@@ -35,8 +29,8 @@ class ThreeMain {
         this.shaderMat = new THREE.RawShaderMaterial( {
     
             //uniforms: this.uniforms,
-            vertexShader: this.B_VS,
-            fragmentShader: this.B_FS,
+            vertexShader: this.threeData.BasicVS,
+            fragmentShader: this.threeData.BasicFS,
     
             //blending: THREE.AdditiveBlending,
             side:THREE.DoubleSide,
