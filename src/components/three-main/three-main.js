@@ -104,12 +104,25 @@ class ThreeMain {
 
     onWindowResize() {
 
+
+        this.size.w = window.innerWidth
+        this.size.h = window.innerHeight
+
+        console.log( this.size.w + ' ' + this.size.h )
         //console.log( this )
         //console.log( this.camera )
-        this.camera.aspect = window.innerWidth / window.innerHeight
+        //this.camera.aspect = window.innerWidth / window.innerHeight
+        //this.camera.updateProjectionMatrix()
+        
+        const aspectRatio = this.size.w / this.size.h
+        this.camera.left = -1 * aspectRatio
+        this.camera.right = 1 * aspectRatio
         this.camera.updateProjectionMatrix()
-    
-        this.renderer.setSize( window.innerWidth, window.innerHeight )
+
+
+
+
+        this.renderer.setSize( this.size.w, this.size.h )
     
     }
 
