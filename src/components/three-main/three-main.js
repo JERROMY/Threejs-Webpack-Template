@@ -47,14 +47,19 @@ class ThreeMain {
 
         this.amL = new THREE.AmbientLight(0xffffff)
 
-        this.camera = new THREE.OrthographicCamera(
-            -1, // left
-             1, // right
-             1, // top
-            -1, // bottom
-            -1, // near,
-             1, // far
-        );
+        // this.camera = new THREE.OrthographicCamera(
+        //     -1, // left
+        //      1, // right
+        //      1, // top
+        //     -1, // bottom
+        //     -1, // near,
+        //      1, // far
+        // );
+
+        this.camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 40000 )
+        this.camera.position.z = 10 //0.35 0 1200
+        this.camera.position.x = 0
+        this.camera.position.y = 0
 
         
         
@@ -116,13 +121,15 @@ class ThreeMain {
         console.log( this.size.w + ' ' + this.size.h )
         //console.log( this )
         //console.log( this.camera )
-        //this.camera.aspect = window.innerWidth / window.innerHeight
-        //this.camera.updateProjectionMatrix()
-        
-        const aspectRatio = this.size.w / this.size.h
-        this.camera.left = -1 * aspectRatio
-        this.camera.right = 1 * aspectRatio
+
+        this.size.asp = this.size.w / this.size.h
+        this.camera.aspect = this.size.asp
         this.camera.updateProjectionMatrix()
+        
+        // const aspectRatio = this.size.w / this.size.h
+        // this.camera.left = -1 * aspectRatio
+        // this.camera.right = 1 * aspectRatio
+        // this.camera.updateProjectionMatrix()
 
 
 
