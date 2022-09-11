@@ -30,7 +30,7 @@ class ThreeMain {
 
         console.log("Three JS Ready")
 
-        this.shaderMat = new THREE.RawShaderMaterial( {
+        this.shaderMat = new THREE.ShaderMaterial( {
     
             //uniforms: this.uniforms,
             vertexShader: this.threeData.BasicVS,
@@ -40,7 +40,7 @@ class ThreeMain {
             side:THREE.DoubleSide,
             // depthTest: false,
             // transparent: true,
-            vertexColors: true
+            // vertexColors: true
     
         } )
         
@@ -57,7 +57,7 @@ class ThreeMain {
         // );
 
         this.camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 40000 )
-        this.camera.position.z = 10 //0.35 0 1200
+        this.camera.position.z = 2 //0.35 0 1200
         this.camera.position.x = 0
         this.camera.position.y = 0
 
