@@ -33,8 +33,8 @@ class ThreeMain {
         this.shaderMat = new THREE.RawShaderMaterial( {
     
             //uniforms: this.uniforms,
-            vertexShader: this.threeData.BasicVS,
-            fragmentShader: this.threeData.BasicFS,
+            vertexShader: this.threeData.BasicLineVS,
+            fragmentShader: this.threeData.BasicLineFS,
     
             //blending: THREE.AdditiveBlending,
             side:THREE.DoubleSide,

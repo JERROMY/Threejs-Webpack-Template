@@ -26,10 +26,15 @@ void main()
     line = vUvs.y - 0.5;
     line = abs( vUvs.y - 0.5 );
     line = smoothstep( 0.0, 1.0, vUvs.y );
+    line = mix( 0.0, 0.5, smoothstep( 0.0, 1.0, vUvs.y ) );
     
     //line = ( vUvs.y );
 
-    line = smoothstep( 0.0, 0.005, abs( vUvs.y - mix( 0.0, 1.0, value2 ) )); //  -0.5 > y > 0.5   0.5 y 0.5
+    //line = smoothstep( 0.0, 0.005, abs( vUvs.y - mix( 0.0, 1.0, vUvs.x ) )); //  -0.5 > y > 0.5   0.5 y 0.5
+
+
+    //line = smoothstep( 0.0, 1.0, vUvs.y );
+    //line = mix( 0.0, 1.0, vUvs.y );
 
     // float line = smoothstep( 0.0, 0.005, abs( vUvs.y - 0.5 ) );
     // float linearLine = smoothstep( 0.0, 0.0075, abs( vUvs.y - mix( 0.5, 1.0, value1 )) );
