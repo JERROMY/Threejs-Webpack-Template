@@ -57,7 +57,7 @@ class ThreeMain {
         // );
 
         this.camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 40000 )
-        this.camera.position.z = 10 //0.35 0 1200
+        this.camera.position.z = 2 //0.35 0 1200
         this.camera.position.x = 0
         this.camera.position.y = 0
 
@@ -65,6 +65,7 @@ class ThreeMain {
         
 
         this.scene = new THREE.Scene()
+        this.scene.background = new THREE.Color( 0xAAAAAA );
         this.scene.add( this.amL )
 
         this.dirGeo = new THREE.BoxGeometry(1, 1, 1)
