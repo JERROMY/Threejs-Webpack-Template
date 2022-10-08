@@ -30,19 +30,7 @@ class ThreeMain {
 
         console.log("Three JS Ready")
 
-        this.shaderMat = new THREE.RawShaderMaterial( {
-    
-            //uniforms: this.uniforms,
-            vertexShader: this.threeData.BasicLineVS,
-            fragmentShader: this.threeData.BasicLineFS,
-    
-            //blending: THREE.AdditiveBlending,
-            side:THREE.DoubleSide,
-            // depthTest: false,
-            // transparent: true,
-            vertexColors: true
-    
-        } )
+        this.shaderMat = this.threeData.BasicMaterial
         
 
         this.amL = new THREE.AmbientLight(0xffffff)

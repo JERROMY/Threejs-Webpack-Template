@@ -40,11 +40,15 @@ module.exports = {
         rules:[
             {
                 test: /\.(png|jpg)$/,
-                type: 'asset',
-                parser: {
-                    dataUrlCondition: {
-                        maxSize: 3 * 1024,
-                    }
+                type: 'asset/resource',
+                generator:
+                {
+                    filename: 'images/[hash][ext]'
+                }
+                // parser: {
+                //     dataUrlCondition: {
+                //         maxSize: 3 * 1024,
+                //     }
                 }
             },
             {
