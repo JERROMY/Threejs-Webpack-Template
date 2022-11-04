@@ -45,10 +45,24 @@ module.exports = {
                 {
                     filename: 'images/[hash][ext]'
                 }
+                
                 // parser: {
                 //     dataUrlCondition: {
                 //         maxSize: 3 * 1024,
                 //     }
+                //}
+            },
+            {
+                test: /\.json$/,
+                type: 'asset/resource',
+                generator:
+                {
+                    filename: 'data/[hash][ext]'
+                }, 
+                parser: {
+                    dataUrlCondition: {
+                        maxSize: 1,
+                    }
                 }
             },
             {

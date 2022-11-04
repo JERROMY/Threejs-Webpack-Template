@@ -22,6 +22,7 @@ module.exports = {
     entry: {
         'index':'./src/index.js',
         'three-data':'./src/three-data.js',
+        'three-objs':'./src/three-objs.js',
     },
     output: {
         filename: '[name].js',
@@ -56,6 +57,19 @@ module.exports = {
                 //         maxSize: 3 * 1024,
                 //     }
                 // }
+            },
+            {
+                test: /\.json$/,
+                type: 'asset/resource',
+                generator:
+                {
+                    filename: 'data/[hash][ext]'
+                }, 
+                parser: {
+                    dataUrlCondition: {
+                        maxSize: 1,
+                    }
+                }
             },
             {
                 test:/\.txt/,

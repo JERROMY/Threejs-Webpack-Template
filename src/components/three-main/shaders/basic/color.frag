@@ -1,9 +1,8 @@
 precision mediump float;
 #define PI 3.14159265359
 
-varying vec2 vUvs;
 
-uniform sampler2D texture;
+uniform vec3 mainColor;
 uniform float time;
 
 float rand(float t)
@@ -19,7 +18,7 @@ void main()
     float t = time;
 
     //vec3 color = vec3( 0.0 );
-    vec3 color = texture2D( texture, vUvs ).rgb;
+    vec3 color = mainColor;
 
     gl_FragColor = vec4(color, 1.0);
 
