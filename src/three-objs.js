@@ -4,6 +4,7 @@ export class CubeGroup extends THREE.Group {
 
 
     constructor( mat1, mat2, color ) {
+        
         super()
         this.mat1 = mat1
         this.mat2 = mat2

@@ -44,8 +44,6 @@ class ThreeMain {
         //parMat.uniforms.pointTexture.value = parTex;
 
         
-        
-        
 
         this.amL = new THREE.AmbientLight(0xffffff)
 
@@ -69,39 +67,13 @@ class ThreeMain {
         this.scene.background = new THREE.Color( 0xAAAAAA );
         this.scene.add( this.amL )
 
-        //===================================
-        // this.cubeGroup = new THREE.Group()
-
-        // this.dirGeo = new THREE.BoxGeometry(1, 1, 1)
-        // this.dirMat = this.shaderMat
-        // this.dirCube = new THREE.Mesh(this.dirGeo, this.dirMat)
-        // this.dirCube.renderOrder = 1
-
-        // this.dirGeo2 = new THREE.BoxGeometry(1.2, 1.2, 1.2)
-        // this.dirMat2 = this.colorMat
-        // this.dirCube2 = new THREE.Mesh(this.dirGeo2, this.dirMat2)
-        // this.dirCube2.renderOrder = 0
-        
-        
-        // this.scene.add(this.cubeGroup)
-        // this.cubeGroup.add(this.dirCube)
-        // this.cubeGroup.add(this.dirCube2)
 
 
-        // this.dirCube.position.set(0, 0, 0)
-        // this.dirCube.visible = true
 
-        this.cubeGroup = new CubeGroup( this.shaderMat, this.colorMat, new Vector3(1.0 , 1.0, 0.0) );
-        this.scene.add( this.cubeGroup )
-        
 
-        this.cubeGroup2 = new CubeGroup( this.shaderMat.clone(), this.colorMat.clone(), new Vector3(1.0 , 0.0, 0.0) );
-        this.scene.add( this.cubeGroup2 )
-        this.cubeGroup2.position.set(2.0, 0, 0)
+        //this.cubeGroup = new CubeGroup( this.shaderMat, this.colorMat, new Vector3(1.0 , 1.0, 0.0) );
+        //this.scene.add( this.cubeGroup )
 
-        this.cubeGroup3 = new CubeGroup( this.shaderMat.clone(), this.colorMat.clone(), new Vector3(1.0 , 0.0, 0.0) );
-        this.scene.add( this.cubeGroup3 )
-        this.cubeGroup3.position.set(5.0, 0, 0)
 
         //=======================================
 
@@ -128,11 +100,11 @@ class ThreeMain {
 
         this.controls = new OrbitControls( this.camera, this.renderer.domElement )
 
-        this.initEvent()
-        this.onWindowResize()
-        this.animate()
+        // this.initEvent()
+        // this.onWindowResize()
+        // this.animate()
 
-        //this.startLoadScene();
+        this.startLoadScene();
 
         
 
@@ -149,7 +121,39 @@ class ThreeMain {
             // called when resource is loaded
             function ( object ) {
 
+                console.log( object );
+                object.children[0].visible = false;
+                const horseObj = object.children[1];
+                const horseObj_clone = object.children[1].clone();
+                //horseObj_clone.position.x = 0.5;
+
+                const horseMat = horseObj.material.clone();
+                
+                const horseShaderMat = self.threeData.TextureMaterial.clone();
+                horseShaderMat.uniforms.diffuseMap.value = horseMat.map;
+
+                const horseColorShaderMat = self.threeData.ColorMaterial2.clone();
+
+                let vec = new THREE.Vector3()
+                const boundingBox = new THREE.Box3().setFromObject( horseObj )
+                boundingBox.getSize( vec )
+
+                let H = vec.y;
+                horseColorShaderMat.uniforms.h.value = H;
+                
+                // const size = boundingBox.getSize()
+                // console.log( vec );
+
+                horseObj.material = horseColorShaderMat;
+
+                console.log( horseMat.map );
                 self.scene.add( object );
+                self.scene.add( horseObj_clone );
+
+
+                self.initEvent()
+                self.onWindowResize()
+                self.animate()
                 
 
             },
