@@ -1,7 +1,13 @@
 //Shader
 
-import BasicVS from './components/three-main/shaders/basic/basicColor.vert'
-import BasicFS from './components/three-main/shaders/basic/basicColor.frag'
+import Basic_VS from './components/three-main/shaders/basic/basicColor.vert'
+import Basic_FS from './components/three-main/shaders/basic/basicColor.frag'
+
+import TestARCard_Mind from './data/TestARCard.mind'
+import TestARCard_Img from './data/TestARCard.png'
+
+// console.log( TestARCard_Mind )
+// console.log( TestARCard_Img )
 
 /*
 
@@ -17,14 +23,17 @@ import BasicFS from './components/three-main/shaders/basic/basicColor.frag'
 
 class ThreeData {
 
-    BasicVS = BasicVS
-    BasicFS = BasicFS
+    BasicVS = Basic_VS
+    BasicFS = Basic_FS
+
+    TestARCardMind = TestARCard_Mind
+    TestARCardImg = TestARCard_Img
     
 
     constructor(){
 
-        console.log(this.BasicVS);
-        console.log(this.BasicFS);
+        //console.log(this.BasicVS);
+        //console.log(this.BasicFS);
 
     }
 

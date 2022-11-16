@@ -46,10 +46,29 @@ module.exports = {
         rules:[
             {
                 test: /\.(png|jpg)$/,
-                type: 'asset',
+                type: 'asset/resource',
+                generator:
+                {
+                    //filename: 'images/[hash][ext]',
+                    filename: 'images/[name][ext]'
+                }
+                
+                // parser: {
+                //     dataUrlCondition: {
+                //         maxSize: 3 * 1024,
+                //     }
+                // }
+            },
+            {
+                test: /\.mind$/,
+                type: 'asset/resource',
+                generator:
+                {
+                    filename: 'images/[name][ext]'
+                }, 
                 parser: {
                     dataUrlCondition: {
-                        maxSize: 3 * 1024,
+                        maxSize: 1,
                     }
                 }
             },

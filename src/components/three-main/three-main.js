@@ -18,6 +18,8 @@ class ThreeMain {
         h: 0
     }
 
+    
+
 
     constructor( threeData ) {
 
@@ -25,6 +27,9 @@ class ThreeMain {
 
         console.log("=========================")
         //console.log(this.B_VS)
+
+        console.log( this.threeData.TestARCardMind )
+        console.log( this.threeData.TestARCardImg )
 
         console.log("Three JS Ready")
 
@@ -43,9 +48,21 @@ class ThreeMain {
         } )
         
 
+        this.mindarThree = new window.MINDAR.IMAGE.MindARThree({
+            container: this.container,
+            imageTargetSrc: this.threeData.TestARCardMind,
+            filterMinCF: 1,
+            filterBeta: 10000,
+            missTolerance: 0,
+            warmupTolerance: 0,
+        });
+
+        this.scene = this.mindarThree.scene;
+        this.camera = this.mindarThree.camera;
+        this.renderer = this.mindarThree.render;
         
         this.initEvent()
-        this.onWindowResize()
+        //this.onWindowResize()
         //this.animate()
 
     }
