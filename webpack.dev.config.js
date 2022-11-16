@@ -20,6 +20,7 @@ css-loader => MiniCssExtractPlugin.loader
 module.exports = {
 
     entry: {
+        'three-ar':'./src/libs/mindar-image-three.prod.js',
         'index':'./src/index.js',
         'three-data':'./src/three-data.js',
     },
@@ -32,6 +33,7 @@ module.exports = {
     mode: 'development',
     devServer: {
         port: 9000,
+        open: true,
         static: {
             directory: path.resolve( __dirname, './dist' ),
         },
@@ -50,6 +52,17 @@ module.exports = {
                         maxSize: 3 * 1024,
                     }
                 }
+            },
+            {
+                test: /\.worker\.js$/,
+                use: {
+                  loader: 'worker-loader',
+                  options: {
+                    esModule: false,
+                    inline: "fallback",
+                    filename: '[name].dev.js'
+                  },
+                },
             },
             {
                 test:/\.txt/,

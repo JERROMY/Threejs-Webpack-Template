@@ -21,7 +21,9 @@ module.exports = {
 
     entry: {
         'index':'./src/index.js',
+        'three-ar':'./libs/mindar-image-three.prod.js',
         'three-data':'./src/three-data.js',
+        
     },
     output: {
         filename: '[name].[contenthash].js',
@@ -46,6 +48,17 @@ module.exports = {
                         maxSize: 3 * 1024,
                     }
                 }
+            },
+            {
+                test: /\.worker\.js$/,
+                use: {
+                  loader: 'worker-loader',
+                  options: {
+                    esModule: false,
+                    inline: "fallback",
+                    filename: '[name].dev.js'
+                  },
+                },
             },
             {
                 test:/\.txt/,
