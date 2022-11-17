@@ -1,5 +1,6 @@
 
 const path = require( 'path' );
+const fs = require('fs');
 // const TerserPlugin = require( 'terser-webpack-plugin' );
 const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 const { CleanWebpackPlugin } = require( 'clean-webpack-plugin' );
@@ -31,8 +32,20 @@ module.exports = {
         //assetModuleFilename: 'images/[hash][ext][query]'
     },
     mode: 'development',
+    // devServer: {
+    //     port: 9000,
+    //     open: true,
+    //     static: {
+    //         directory: path.resolve( __dirname, './dist' ),
+    //     },
+    //     devMiddleware: {
+    //         index: 'index.html',
+    //         writeToDisk: true,
+    //     }
+    // },
     devServer: {
-        port: 9000,
+        // host: "192.168.1.123",
+        port: 443,
         open: true,
         static: {
             directory: path.resolve( __dirname, './dist' ),
@@ -40,7 +53,14 @@ module.exports = {
         devMiddleware: {
             index: 'index.html',
             writeToDisk: true,
-        }
+        },
+        https: true,
+        https: {
+            key: fs.readFileSync(`localhost+1-key.pem`),
+            cert: fs.readFileSync(`localhost+1.pem`),
+            //ca: fs.readFileSync('rootCA.pem'),
+            passphrase: '0937047859',
+        },
     },
     module: {
         rules:[
