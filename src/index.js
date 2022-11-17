@@ -9,8 +9,9 @@ import './main.scss'
 const container3D = new Container3D()
 container3D.render()
 
-const threeData = new ThreeData()
-const threeMain = new ThreeMain(threeData)
+
+//const threeData = new ThreeData()
+//const threeMain = new ThreeMain(threeData)
 
 
 if (process.env.NODE_ENV === 'production') {
