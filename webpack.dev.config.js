@@ -56,8 +56,8 @@ module.exports = {
         },
         https: true,
         https: {
-            key: fs.readFileSync(`localhost+1-key.pem`),
-            cert: fs.readFileSync(`localhost+1.pem`),
+            key: fs.readFileSync(`localhost+2-key.pem`),
+            cert: fs.readFileSync(`localhost+2.pem`),
             //ca: fs.readFileSync('rootCA.pem'),
             passphrase: '0937047859',
         },
@@ -153,10 +153,10 @@ module.exports = {
         }),
         new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
-            filename: 'index.html',
-            title: 'Three.js 3D Web Template',
-            // template: 'src/page-template.hbs',
-            description: 'Test 3D Template',
+            // filename: 'index.html',
+            title: 'Three.js AR Template',
+            template: 'src/index.hbs',
+            description: 'AR Template',
             minify: false,
         }),
     ]

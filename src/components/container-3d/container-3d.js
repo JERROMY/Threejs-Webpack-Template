@@ -9,6 +9,7 @@ class Container3D {
         container.height = 400
         const body = document.querySelector( 'body' )
         body.appendChild( container )
+        //https://blog.minhazav.dev/research/html5-qrcode
     }
 }
 

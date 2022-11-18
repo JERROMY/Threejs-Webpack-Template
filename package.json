@@ -34,6 +34,7 @@
   },
   "dependencies": {
     "handlebars": "^4.7.7",
+    "jquery": "^3.6.1",
     "lodash": "^4.17.21",
     "react": "^18.2.0",
     "three": "^0.144.0"

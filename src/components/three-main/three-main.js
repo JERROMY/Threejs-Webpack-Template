@@ -3,6 +3,7 @@
 const THREE = window.MINDAR.IMAGE.THREE
 
 
+
 class ThreeMain {
 
     //camera
@@ -49,22 +50,44 @@ class ThreeMain {
         
 
         this.mindarThree = new window.MINDAR.IMAGE.MindARThree({
+
             container: this.container,
             imageTargetSrc: this.threeData.TestARCardMind,
-            filterMinCF: 1,
+            filterMinCF: 2,
             filterBeta: 10000,
-            missTolerance: 0,
-            warmupTolerance: 0,
+            missTolerance: 5,
+            warmupTolerance: 5,
+        
         });
 
-        this.scene = this.mindarThree.scene;
-        this.camera = this.mindarThree.camera;
-        this.renderer = this.mindarThree.render;
+        this.scene = this.mindarThree.scene
+        this.camera = this.mindarThree.camera
+        this.renderer = this.mindarThree.renderer
+
+        //console.log("TEST ====== ")
+        //console.log(this.mindarThree.renderer)
+
+        this.anchor = this.mindarThree.addAnchor( 0 )
+        this.geometry = new THREE.PlaneGeometry( 1, 0.55 )
+        this.material = new THREE.MeshBasicMaterial( { color: 0x00ffff, transparent: true, opacity: 0.5 } )
+        this.plane = new THREE.Mesh( this.geometry, this.material )
+        this.anchor.group.add( this.plane )
         
         this.initEvent()
         //this.onWindowResize()
         //this.animate()
 
+    }
+
+    async startAR(){
+        await this.mindarThree.start()
+        this.onWindowResize()
+        this.animate()
+    }
+
+    stopAR(){
+        this.mindarThree.stop()
+	    this.mindarThree.renderer.setAnimationLoop(null)
     }
 
     animate(){
@@ -88,20 +111,11 @@ class ThreeMain {
         this.size.h = window.innerHeight
 
         console.log( this.size.w + ' ' + this.size.h )
-        //console.log( this )
-        //console.log( this.camera )
 
         this.size.asp = this.size.w / this.size.h
         this.camera.aspect = this.size.asp
         this.camera.updateProjectionMatrix()
         
-        // const aspectRatio = this.size.w / this.size.h
-        // this.camera.left = -1 * aspectRatio
-        // this.camera.right = 1 * aspectRatio
-        // this.camera.updateProjectionMatrix()
-
-
-
 
         this.renderer.setSize( this.size.w, this.size.h )
     
