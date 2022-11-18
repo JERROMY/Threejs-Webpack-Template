@@ -1,6 +1,31 @@
 
+import { CSS3DRenderer, CSS3DObject } from 'three/examples/jsm/renderers/CSS3DRenderer.js';
+
+
 
 const THREE = window.MINDAR.IMAGE.THREE
+
+function Element( id, x, y, z, ry ) {
+
+    const div = document.createElement( 'div' );
+    div.style.width = '480px';
+    div.style.height = '360px';
+    div.style.backgroundColor = '#000';
+
+    const iframe = document.createElement( 'iframe' );
+    iframe.style.width = '480px';
+    iframe.style.height = '360px';
+    iframe.style.border = '0px';
+    iframe.src = [ 'https://www.youtube.com/embed/', id, '?rel=0' ].join( '' );
+    div.appendChild( iframe );
+
+    const object = new CSS3DObject( div );
+    object.position.set( x, y, z );
+    object.rotation.y = ry;
+
+    return object;
+
+}
 
 
 
@@ -63,21 +88,24 @@ class ThreeMain {
         this.scene = this.mindarThree.scene
         this.camera = this.mindarThree.camera
         this.renderer = this.mindarThree.renderer
+        console.log( this.mindarThree.renderer )
 
-        //console.log("TEST ====== ")
-        //console.log(this.mindarThree.renderer)
 
         this.anchor = this.mindarThree.addAnchor( 0 )
         this.geometry = new THREE.PlaneGeometry( 1, 0.55 )
         this.material = new THREE.MeshBasicMaterial( { color: 0x00ffff, transparent: true, opacity: 0.5 } )
         this.plane = new THREE.Mesh( this.geometry, this.material )
+        
         this.anchor.group.add( this.plane )
+
         
         this.initEvent()
         //this.onWindowResize()
         //this.animate()
 
     }
+
+    
 
     async startAR(){
         await this.mindarThree.start()
@@ -98,6 +126,11 @@ class ThreeMain {
 
     update(){
         this.renderer.render( this.scene, this.camera )
+
+
+        //if( this.anchor ){
+            //console.log( this.anchor.position )
+        //}
     }
 
     initEvent(){
@@ -118,6 +151,7 @@ class ThreeMain {
         
 
         this.renderer.setSize( this.size.w, this.size.h )
+
     
     }
 

@@ -3,8 +3,8 @@
 import Basic_VS from './components/three-main/shaders/basic/basicColor.vert'
 import Basic_FS from './components/three-main/shaders/basic/basicColor.frag'
 
-import TestARCard_Mind from './data/Card12.mind'
-import TestARCard_Img from './data/Card12.jpg'
+import TestARCard_Mind from './data/Card11.mind'
+import TestARCard_Img from './data/Card11.jpg'
 
 // console.log( TestARCard_Mind )
 // console.log( TestARCard_Img )
