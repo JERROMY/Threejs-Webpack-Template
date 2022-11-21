@@ -1,6 +1,8 @@
 
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls.js';
+import { CSS3DRenderer, CSS3DObject } from 'three/examples/jsm/renderers/CSS3DRenderer.js';
 
 class ThreeMain {
 
@@ -43,6 +45,9 @@ class ThreeMain {
             vertexColors: true
     
         } )
+
+        this.scene = new THREE.Scene();
+
         
 
         this.amL = new THREE.AmbientLight(0xffffff)
@@ -64,33 +69,19 @@ class ThreeMain {
         
         
 
-        this.scene = new THREE.Scene()
-        this.scene.add( this.amL )
-
-        this.dirGeo = new THREE.BoxGeometry(1, 1, 1)
-        this.dirMat = this.shaderMat
-        this.dirCube = new THREE.Mesh(this.dirGeo, this.dirMat)
-        this.scene.add(this.dirCube)
-        this.dirCube.position.set(0, 0, 0)
-        this.dirCube.visible = false
-
-        this.axistHelper = new THREE.AxesHelper( 5 )
-        this.dirCube.add( this.axistHelper )
-
-
-        this.planeGeo = new THREE.PlaneGeometry(2, 2)
-        this.planeMesh = new THREE.Mesh( this.planeGeo, this.dirMat )
-        this.scene.add( this.planeMesh )
-
-
-
-        this.renderer = new THREE.WebGLRenderer({ antialias: true })
-        this.renderer.setPixelRatio( window.devicePixelRatio )
-        this.renderer.setSize( window.innerWidth, window.innerHeight )
-        //this.renderer.outputEncoding = THREE.sRGBEncoding
+       
+        this.renderer = new CSS3DRenderer()
+		this.renderer.setSize( window.innerWidth, window.innerHeight )
         this.container.appendChild( this.renderer.domElement )
 
-        this.controls = new OrbitControls( this.camera, this.renderer.domElement )
+
+        //this.renderer = new THREE.WebGLRenderer({ antialias: true })
+        //this.renderer.setPixelRatio( window.devicePixelRatio )
+        //this.renderer.setSize( window.innerWidth, window.innerHeight )
+        //this.renderer.outputEncoding = THREE.sRGBEncoding
+        //this.container.appendChild( this.renderer.domElement )
+
+        //this.controls = new OrbitControls( this.camera, this.renderer.domElement )
 
         this.initEvent()
         this.onWindowResize()
