@@ -66,9 +66,13 @@ class ThreeMain {
         this.camera.position.x = 0
         this.camera.position.y = 0
 
-        
-        
+        this.cardDiv = document.createElement( 'div' );
+		this.cardDiv.className = 'card';
 
+        this.cardObj = new CSS3DObject( this.cardDiv );
+        this.scene.add( this.cardObj );
+
+        
        
         this.renderer = new CSS3DRenderer()
 		this.renderer.setSize( window.innerWidth, window.innerHeight )
@@ -96,6 +100,11 @@ class ThreeMain {
     }
 
     update(){
+
+        if( this.cardObj ){
+            this.cardObj.rotation.y += 0.001;
+        }
+
         this.renderer.render( this.scene, this.camera )
     }
 
