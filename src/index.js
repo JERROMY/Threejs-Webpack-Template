@@ -6,12 +6,22 @@ import $ from 'jquery'
 import ThreeData from "./three-data"
 import ThreeMain from "./components/three-main/three-main"
 
+const url = new URL(location.href);
+const objID  = url.searchParams.get("id");
+if( !objID ){
+    alert("There is no scan obj!")
+}
+
+
+console.log( "Scan ID: " + objID );
+
 
 const container3D = new Container3D()
 container3D.render()
 
 
 const threeData = new ThreeData()
+threeData.VideoID = objID;
 const threeMain = new ThreeMain(threeData)
 
 initEvent()

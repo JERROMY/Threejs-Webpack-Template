@@ -28,6 +28,8 @@ class ThreeData {
 
     TestARCardMind = TestARCard_Mind
     TestARCardImg = TestARCard_Img
+
+    VideoID = "";
     
 
     constructor(){
