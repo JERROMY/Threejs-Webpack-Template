@@ -33,14 +33,6 @@ class ThreeMain {
 
         console.log("Three JS Ready")
 
-        const texturePath = this.threeData.TexturePath
-        const texture = new THREE.TextureLoader().load( texturePath );
-
-        this.shaderMat = this.threeData.BasicMaterial.clone()
-        this.shaderMat.uniforms.texture.value = texture
-
-        this.colorMat = this.threeData.ColorMaterial.clone()
-
         //parMat.uniforms.pointTexture.value = parTex;
 
         
@@ -123,32 +115,11 @@ class ThreeMain {
 
                 console.log( object );
                 object.children[0].visible = false;
-                const horseObj = object.children[1];
-                const horseObj_clone = object.children[1].clone();
+                //const horseObj = object.children[1];
                 //horseObj_clone.position.x = 0.5;
 
-                const horseMat = horseObj.material.clone();
                 
-                const horseShaderMat = self.threeData.TextureMaterial.clone();
-                horseShaderMat.uniforms.diffuseMap.value = horseMat.map;
-
-                const horseColorShaderMat = self.threeData.ColorMaterial2.clone();
-
-                let vec = new THREE.Vector3()
-                const boundingBox = new THREE.Box3().setFromObject( horseObj )
-                boundingBox.getSize( vec )
-
-                let H = vec.y;
-                horseColorShaderMat.uniforms.h.value = H;
-                
-                // const size = boundingBox.getSize()
-                // console.log( vec );
-
-                horseObj.material = horseColorShaderMat;
-
-                console.log( horseMat.map );
                 self.scene.add( object );
-                self.scene.add( horseObj_clone );
 
 
                 self.initEvent()
