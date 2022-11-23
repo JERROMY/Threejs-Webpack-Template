@@ -6,6 +6,7 @@ export class SceneMgr extends THREE.Group {
     constructor( scenePath, onProcess, onFinish) {
         
         super()
+        this.debugAlpha = 0
         this.scenePath = scenePath
         this.loader = new THREE.ObjectLoader()
         this.totalSize = 102858737
@@ -13,6 +14,9 @@ export class SceneMgr extends THREE.Group {
             onProcess: onProcess,
             onFinish: onFinish,
         }
+
+        this.startObj = null
+        this.pts = []
 
     }
 
@@ -25,7 +29,9 @@ export class SceneMgr extends THREE.Group {
             // called when resource is loaded
             function ( object ) {
 
-                console.log( object );
+                console.log( object )
+
+                
 
                 self.initScene( object )
                 self.delegate.onFinish( object )
@@ -71,12 +77,20 @@ export class SceneMgr extends THREE.Group {
                 }
 
                 if( obj.name.indexOf( "floor" ) != -1 ){
-                    obj.material.opacity = self.floorAlpha
+                    obj.material.opacity = self.debugAlpha
                 }
 
                 if( obj.name.indexOf( "PT" ) != -1 ){
                     obj.material.transparent = true
-                    obj.material.opacity = self.floorAlpha
+                    obj.material.opacity = self.debugAlpha
+
+                    if( obj.name == "PT0" ){
+                        self.startObj = obj;
+                        console.log( self.startObj )
+                    }else{
+                        self.pts.push( obj )
+                    }
+
                 }
                 //obj.material.map.encoding = THREE.sRGBEncoding;
                 //console.log( obj.material.map );

@@ -22,7 +22,7 @@ class ThreeMain {
         h: 0
     }
 
-    floorAlpha = 0.5
+    
 
 
     constructor( threeData ) {
@@ -78,7 +78,7 @@ class ThreeMain {
         //this.renderer.outputEncoding = THREE.sRGBEncoding
         this.container.appendChild( this.renderer.domElement )
 
-        this.controls = new OrbitControls( this.camera, this.renderer.domElement )
+        //this.controls = new OrbitControls( this.camera, this.renderer.domElement )
 
         // this.initEvent()
         // this.onWindowResize()
@@ -93,8 +93,8 @@ class ThreeMain {
 
 
     //Scene Delegate
-    onSceneProcess( p, t ){
-        console.log( `P: ${ p }` )
+    onSceneProcess( p ){
+        //console.log( `P: ${ p }` )
     }
 
     onSceneFinsh( sceneObj ){
@@ -103,11 +103,26 @@ class ThreeMain {
         console.log( "Scene Load Finish!" )
 
         this.scene.add( sceneObj )
+    
 
         this.initEvent()
         this.onWindowResize()
+        this.initPosition()
         this.animate()
     }
+
+    initPosition(){
+
+        const startObj = this.sceneMgr.startObj
+        this.camera.position.set( startObj.position.x, startObj.position.y, startObj.position.z )
+        
+
+        console.log( `Start Position: ${ startObj.position.x }  ${ startObj.position.y } ${ startObj.position.z }` )
+
+
+    }
+
+
     //Scene Delegate
 
 
@@ -138,6 +153,7 @@ class ThreeMain {
         this.size.asp = this.size.w / this.size.h
         this.camera.aspect = this.size.asp
         this.camera.updateProjectionMatrix()
+        
         
         // const aspectRatio = this.size.w / this.size.h
         // this.camera.left = -1 * aspectRatio
