@@ -130,7 +130,7 @@ class ThreeMain {
             },
             // called when loading is in progresses
             function ( xhr ) {
-
+                console.log( xhr )
                 //console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
 
             },
