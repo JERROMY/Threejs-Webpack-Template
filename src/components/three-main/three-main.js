@@ -1,8 +1,7 @@
 
 import * as THREE from 'three'
-import { Vector3 } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
-import { CubeGroup } from '../../three-objs'
+import { SceneMgr } from '../../three-objs'
 
 
 class ThreeMain {
@@ -23,6 +22,8 @@ class ThreeMain {
         h: 0
     }
 
+    floorAlpha = 0.5
+
 
     constructor( threeData ) {
 
@@ -32,45 +33,24 @@ class ThreeMain {
         //console.log(this.B_VS)
 
         console.log("Three JS Ready")
+    
 
-        //parMat.uniforms.pointTexture.value = parTex;
-
-        
-
-        this.amL = new THREE.AmbientLight(0xffffff)
-
-        // this.camera = new THREE.OrthographicCamera(
-        //     -1, // left
-        //      1, // right
-        //      1, // top
-        //     -1, // bottom
-        //     -1, // near,
-        //      1, // far
-        // );
-
-        this.camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 40000 )
-        this.camera.position.z = 5 //0.35 0 1200
+        this.camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 10000 )
+        this.camera.position.z = 1000 //0.35 0 1200
         this.camera.position.x = 0
-        this.camera.position.y = 10
+        this.camera.position.y = 1000
         this.camera.lookAt( new THREE.Vector3(0, 0, 0) )
 
 
         this.scene = new THREE.Scene()
-        this.scene.background = new THREE.Color( 0xAAAAAA );
-        this.scene.add( this.amL )
-
-
-
+        this.scene.background = new THREE.Color( 0x000000 );
+        //this.scene.add( this.amL )
 
 
         //this.cubeGroup = new CubeGroup( this.shaderMat, this.colorMat, new Vector3(1.0 , 1.0, 0.0) );
         //this.scene.add( this.cubeGroup )
 
-
         //=======================================
-
-
-        
 
         //this.axistHelper = new THREE.AxesHelper( 5 )
         //this.dirCube.add( this.axistHelper )
@@ -84,9 +64,17 @@ class ThreeMain {
 
 
 
-        this.renderer = new THREE.WebGLRenderer({ antialias: true })
+        this.renderer = new THREE.WebGLRenderer({ 
+            antialias: true, 
+            powerPreference: "high-performance",
+            precision: "highp",
+            logarithmicDepthBuffer: true,
+                
+        })
+
         this.renderer.setPixelRatio( window.devicePixelRatio )
         this.renderer.setSize( window.innerWidth, window.innerHeight )
+        this.renderer.outputEncoding = THREE.sRGBEncoding
         //this.renderer.outputEncoding = THREE.sRGBEncoding
         this.container.appendChild( this.renderer.domElement )
 
@@ -96,55 +84,32 @@ class ThreeMain {
         // this.onWindowResize()
         // this.animate()
 
-        this.startLoadScene();
+        this.sceneMgr = new SceneMgr( this.threeData.SceneDataPath,  this.onSceneProcess.bind( this ), this.onSceneFinsh.bind( this ) )
+        this.sceneMgr.startLoad()
 
         
 
     }
 
-    startLoadScene(){
 
-        const loader = new THREE.ObjectLoader();
-        const self = this;
-        // load a resource
-        loader.load(
-            // resource URL
-            this.threeData.SceneDataPath,
-            // called when resource is loaded
-            function ( object ) {
-
-                console.log( object );
-                object.children[0].visible = false;
-                //const horseObj = object.children[1];
-                //horseObj_clone.position.x = 0.5;
-
-                
-                self.scene.add( object );
-
-
-                self.initEvent()
-                self.onWindowResize()
-                self.animate()
-                
-
-            },
-            // called when loading is in progresses
-            function ( xhr ) {
-                console.log( xhr )
-                //console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
-
-            },
-            // called when loading has errors
-            function ( error ) {
-
-                //console.log( 'An error happened' );
-
-            }
-        );
-
-        
-
+    //Scene Delegate
+    onSceneProcess( p, t ){
+        console.log( `P: ${ p }` )
     }
+
+    onSceneFinsh( sceneObj ){
+
+        //console.log( this )
+        console.log( "Scene Load Finish!" )
+
+        this.scene.add( sceneObj )
+
+        this.initEvent()
+        this.onWindowResize()
+        this.animate()
+    }
+    //Scene Delegate
+
 
     animate(){
         //console.log("animate")

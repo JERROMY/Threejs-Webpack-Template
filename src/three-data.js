@@ -5,7 +5,7 @@ import BasicVS from './components/three-main/shaders/basic/basicColor.vert'
 import BasicFS from './components/three-main/shaders/basic/basicColor.frag'
 
 
-import SceneDataPath from './data/main.json'
+import SceneDataPath from './data/main_scene.json'
 
 //console.log( "Image URL: " + TestTex )
 
