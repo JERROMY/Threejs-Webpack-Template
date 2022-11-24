@@ -20,6 +20,7 @@ css-loader => MiniCssExtractPlugin.loader
 module.exports = {
 
     entry: {
+        'utils':'./src/utils.js',
         'index':'./src/index.js',
         'three-data':'./src/three-data.js',
         'three-objs':'./src/three-objs.js',
