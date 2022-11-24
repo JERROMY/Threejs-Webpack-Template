@@ -11,11 +11,17 @@ import './main.scss'
 const container3D = new Container3D()
 container3D.render()
 
+const container2D = new Container2D()
+container2D.render()
+container2D.text( "loading" )
+
 // const container2D = new Container2D()
 // container2D.render()
 
 const threeData = new ThreeData()
-const threeMain = new ThreeMain(threeData)
+threeData.LoadingDiv = container2D
+
+const threeMain = new ThreeMain( threeData )
 
 
 if (process.env.NODE_ENV === 'production') {

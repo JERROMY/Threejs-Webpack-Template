@@ -1,22 +1,27 @@
 import './container-2d.scss'
 
 class Container2D {
+
+    constructor(){
+        this.container = document.createElement('div')
+    }
+
     render() {
 
-        const canvas = document.createElement('canvas')
-        canvas.id = "data-layer"
-        canvas.width = 400
-        canvas.height = 400
-
-        const container = document.createElement('div')
-        container.id = "container-2d"
-        container.classList.add( 'container-2d' )
-        container.width = 400
-        container.height = 400
+        
+        this.container.id = "container-2d"
+        this.container.classList.add( 'container-2d' )
         const body = document.querySelector( 'body' )
-        body.appendChild( container )
+        body.appendChild( this.container )
 
-        container.appendChild( canvas )
+    }
+
+    text( text ){
+        this.container.innerHTML = text
+    }
+
+    hide(){
+        this.container.style.display = "none"
     }
 }
 

@@ -126,9 +126,9 @@ module.exports = {
         new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
             filename: 'index.html',
-            title: 'Three.js 3D Web Template',
+            title: 'KusoCloud-Test',
             // template: 'src/page-template.hbs',
-            description: 'Test 3D Template',
+            description: 'KusoCloud-Test',
             minify: false,
         }),
     ]

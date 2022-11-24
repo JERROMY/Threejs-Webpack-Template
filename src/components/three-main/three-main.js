@@ -80,12 +80,14 @@ class ThreeMain {
 
     //Scene Delegate
     onSceneProcess( p ){
+        this.threeData.LoadingDiv.text( `${ p } %` )
         //console.log( `P: ${ p }` )
     }
 
     onSceneFinsh( sceneObj ){
 
         this.isLoading = true
+        this.threeData.LoadingDiv.hide()
 
         //console.log( this )
         console.log( "Scene Load Finish!" )

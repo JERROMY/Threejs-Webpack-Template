@@ -27,6 +27,7 @@ class ThreeData {
     BasicFS = BasicFS
 
     SceneDataPath = SceneDataPath
+    LoadingDiv
     
 
     constructor(){
