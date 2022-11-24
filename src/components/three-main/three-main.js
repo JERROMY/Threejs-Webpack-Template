@@ -1,7 +1,8 @@
 
 import * as THREE from 'three'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+
 import { SceneMgr } from '../../three-objs'
+import { Controls } from '../../three-controls'
 
 
 class ThreeMain {
@@ -22,7 +23,14 @@ class ThreeMain {
         h: 0
     }
 
-    
+    intersection = {
+        intersects: false,
+        point: new THREE.Vector3(),
+        normal: new THREE.Vector3()
+    }
+
+    isLoading = false
+
 
 
     constructor( threeData ) {
@@ -47,23 +55,6 @@ class ThreeMain {
         //this.scene.add( this.amL )
 
 
-        //this.cubeGroup = new CubeGroup( this.shaderMat, this.colorMat, new Vector3(1.0 , 1.0, 0.0) );
-        //this.scene.add( this.cubeGroup )
-
-        //=======================================
-
-        //this.axistHelper = new THREE.AxesHelper( 5 )
-        //this.dirCube.add( this.axistHelper )
-
-
-        this.planeGeo = new THREE.PlaneGeometry(2, 2)
-        this.planeMesh = new THREE.Mesh( this.planeGeo, this.dirMat )
-        this.scene.add( this.planeMesh )
-        this.planeMesh.rotation.x = -Math.PI / 2
-        this.planeMesh.visible = false
-
-
-
         this.renderer = new THREE.WebGLRenderer({ 
             antialias: true, 
             powerPreference: "high-performance",
@@ -75,14 +66,9 @@ class ThreeMain {
         this.renderer.setPixelRatio( window.devicePixelRatio )
         this.renderer.setSize( window.innerWidth, window.innerHeight )
         this.renderer.outputEncoding = THREE.sRGBEncoding
-        //this.renderer.outputEncoding = THREE.sRGBEncoding
         this.container.appendChild( this.renderer.domElement )
-
-        //this.controls = new OrbitControls( this.camera, this.renderer.domElement )
-
-        // this.initEvent()
-        // this.onWindowResize()
-        // this.animate()
+        
+        this.controls = null
 
         this.sceneMgr = new SceneMgr( this.threeData.SceneDataPath,  this.onSceneProcess.bind( this ), this.onSceneFinsh.bind( this ) )
         this.sceneMgr.startLoad()
@@ -99,6 +85,8 @@ class ThreeMain {
 
     onSceneFinsh( sceneObj ){
 
+        this.isLoading = true
+
         //console.log( this )
         console.log( "Scene Load Finish!" )
 
@@ -107,14 +95,37 @@ class ThreeMain {
 
         this.initEvent()
         this.onWindowResize()
-        this.initPosition()
+        this.init()
         this.animate()
     }
 
-    initPosition(){
+    //Control Delegate
+    onPtMove( intersect ){
+
+        this.sceneMgr.updatePin( intersect )
+        
+    }
+
+    onPtChoose( intersect ){
+        const hitObjName = intersect.object.name
+        console.log( hitObjName )
+    }
+
+    init(){
+
+        
 
         const startObj = this.sceneMgr.startObj
-        this.camera.position.set( startObj.position.x, startObj.position.y, startObj.position.z )
+        const aimObj = this.sceneMgr.aimHelper
+        const targetObj = this.sceneMgr.targetHelper
+        const followObj = this.sceneMgr.followHelper
+
+        this.controls = new Controls( this.camera, this.renderer, this.scene, this.size, this.onPtMove.bind( this ), this.onPtChoose.bind( this ), startObj, aimObj, targetObj, followObj )
+        this.controls.rayCasterObjs = this.sceneMgr.floorObjs
+        this.controls.initControls()
+        this.controls.initEvent()
+        
+
         
 
         console.log( `Start Position: ${ startObj.position.x }  ${ startObj.position.y } ${ startObj.position.z }` )
@@ -133,6 +144,12 @@ class ThreeMain {
     }
 
     update(){
+
+        if( this.isLoading ){
+            this.controls.update()
+        }
+
+
         this.renderer.render( this.scene, this.camera )
     }
 

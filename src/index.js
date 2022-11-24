@@ -1,4 +1,7 @@
 
+import * as THREE from 'three'
+
+
 import Container3D from "./components/container-3d/container-3d"
 import Container2D from "./components/container-2d/container-2d"
 import ThreeData from "./three-data"

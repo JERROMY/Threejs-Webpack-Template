@@ -1,4 +1,6 @@
 
+
+
 const path = require( 'path' );
 // const TerserPlugin = require( 'terser-webpack-plugin' );
 const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
@@ -20,12 +22,14 @@ css-loader => MiniCssExtractPlugin.loader
 module.exports = {
 
     entry: {
+        'utils':'./src/utils.js',
         'index':'./src/index.js',
         'three-data':'./src/three-data.js',
         'three-objs':'./src/three-objs.js',
+        'three-controls':'./src/three-controls.js',
     },
     output: {
-        filename: '[name].js',
+        filename: '[name].[contenthash].js',
         path: path.resolve( __dirname, './dist' ),
         publicPath: '',
         //assetModuleFilename: 'images/[hash][ext][query]'

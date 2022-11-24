@@ -1,4 +1,71 @@
+
 import * as THREE from 'three'
+
+export class Aim extends THREE.Group {
+
+    constructor( aimObj ) {
+        
+        super()
+        this.aimObj = aimObj.clone()
+        this.add( this.aimObj )
+        
+
+    }
+
+
+}
+
+export class TargetHelper extends THREE.Group {
+
+    constructor( color ) {
+        
+        super()
+        this.aimTarget = new THREE.AxesHelper( 20 )
+        this.aimTarget.visible = true
+        this.add( this.aimTarget )
+
+        
+        this.aimCubeGeo = new THREE.BoxGeometry( 10, 10, 10 )
+        this.aimCubeMat = new THREE.MeshBasicMaterial( { color: color } )
+        this.aimCube = new THREE.Mesh( this.aimCubeGeo, this.aimCubeMat )
+        this.add( this.aimCube )
+        
+
+    }
+
+
+}
+
+export class TargetFollowHelper extends THREE.Group {
+
+    constructor( color, color2 ) {
+        
+        super()
+
+        this.distCameraFromTarget = 0.01
+
+        this.aimTarget = new THREE.AxesHelper( 10 )
+        this.aimTarget.visible = true
+        this.add( this.aimTarget )
+
+        this.aimCubeGeo = new THREE.BoxGeometry( 5, 5, 5 )
+        this.aimCubeMat = new THREE.MeshBasicMaterial( { color: color } )
+        this.aimCube = new THREE.Mesh( this.aimCubeGeo, this.aimCubeMat )
+        this.add( this.aimCube )
+
+        this.followGeo = new THREE.BoxGeometry( 5, 5, 5 )
+        this.followMat = new THREE.MeshBasicMaterial( { color: color2 } )
+        this.followCube = new THREE.Mesh( this.followGeo, this.followMat )
+        this.add( this.followCube )
+        this.followCube.position.set( 0, 0, -this.distCameraFromTarget )
+        
+        
+        
+
+    }
+
+
+}
 
 export class SceneMgr extends THREE.Group {
 
@@ -8,6 +75,21 @@ export class SceneMgr extends THREE.Group {
         super()
         this.debugAlpha = 0
         this.scenePath = scenePath
+
+        this.followHelper = new TargetFollowHelper( 0xff00ff, 0x0000ff )
+        this.followHelper.position.set( 0, 0, 0 )
+        this.add( this.followHelper )
+
+        this.targetHelper = new TargetHelper( 0xff0000 )
+        this.targetHelper.position.set( 0, 1000, 0 )
+        this.add( this.targetHelper )
+
+        this.aimHelper = new TargetHelper( 0x00ff00 )
+        this.aimHelper.position.set( 0, 500, 0 )
+        this.add( this.aimHelper )
+
+        this.followHelper.visible = this.aimHelper.visible = this.targetHelper.visible = false
+        
         this.loader = new THREE.ObjectLoader()
         this.totalSize = 102858737
         this.delegate = {
@@ -17,6 +99,11 @@ export class SceneMgr extends THREE.Group {
 
         this.startObj = null
         this.pts = []
+        this.floorObjs = []
+
+        this.resourcesObj = null
+        this.aim = null
+        this.aimDist = 1
 
     }
 
@@ -31,10 +118,13 @@ export class SceneMgr extends THREE.Group {
 
                 console.log( object )
 
-                
+                self.resourcesObj = object.getObjectByName("resources")
+                console.log( self.resourcesObj )
 
+                
+                self.add( object )
                 self.initScene( object )
-                self.delegate.onFinish( object )
+                self.delegate.onFinish( self )
                 
                 //self.scene.add( object )
                 //self.initEvent()
@@ -68,16 +158,31 @@ export class SceneMgr extends THREE.Group {
     initScene( sceneObj ){
 
         const self = this
-        
+        console.log( "========== Scene ======== " )
+
+        this.aimObj = this.resourcesObj.getObjectByName("pin")
+        this.aim = new Aim( this.aimObj )
+        this.add( this.aim )
+        this.aim.position.y = 1000
+        //console.log( this.aimObj )
+
+
+
         sceneObj.traverse( function( obj ){
             //console.log( obj.type )
             if( obj.type === "Mesh" ){
+
                 if( obj.material.map != null ){
-                    obj.material.map.encoding = THREE.sRGBEncoding
+                    if( obj.name != "pin" ){
+                        obj.material.map.encoding = THREE.sRGBEncoding
+                    }
+                    
                 }
 
                 if( obj.name.indexOf( "floor" ) != -1 ){
                     obj.material.opacity = self.debugAlpha
+                    self.floorObjs.push( obj )
+                    //console.log( obj )
                 }
 
                 if( obj.name.indexOf( "PT" ) != -1 ){
@@ -86,6 +191,7 @@ export class SceneMgr extends THREE.Group {
 
                     if( obj.name == "PT0" ){
                         self.startObj = obj;
+                        self.startObj.position.set( self.startObj.position.x, 400, self.startObj.position.z )
                         console.log( self.startObj )
                     }else{
                         self.pts.push( obj )
@@ -97,6 +203,26 @@ export class SceneMgr extends THREE.Group {
             }
         });
 
+    }
+
+    updatePin( intersect ){
+        if( this.aim != null ){
+
+            const targetObj = this.targetHelper
+            const startObj = this.startObj
+
+            const hitObjName = intersect.object.name
+
+            const p = intersect.point
+            const n = intersect.face.normal.clone()
+
+
+            targetObj.position.set( p.x, startObj.position.y, p.z )
+            this.aim.position.set( p.x, p.y+this.aimDist, p.z )
+            //console.log( hitObjName )
+
+        }
+        
     }
 
 

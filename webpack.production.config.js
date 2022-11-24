@@ -22,6 +22,8 @@ module.exports = {
     entry: {
         'index':'./src/index.js',
         'three-data':'./src/three-data.js',
+        'three-objs':'./src/three-objs.js',
+        'three-controls':'./src/three-controls.js',
     },
     output: {
         filename: '[name].[contenthash].js',
@@ -57,7 +59,7 @@ module.exports = {
                 type: 'asset/resource',
                 generator:
                 {
-                    filename: 'data/[hash][ext]'
+                    filename: 'data/[name][ext]'
                 }, 
                 parser: {
                     dataUrlCondition: {
