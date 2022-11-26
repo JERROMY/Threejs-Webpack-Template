@@ -31,6 +31,7 @@ class ThreeMain {
 
     isLoading = false
 
+   
 
 
     constructor( threeData ) {
@@ -104,12 +105,13 @@ class ThreeMain {
     //Control Delegate
     onPtMove( intersect ){
 
-        this.sceneMgr.updatePin( intersect )
+        this.sceneMgr.updatePin( intersect, "Move" )
         
     }
 
     onPtChoose( intersect ){
         const hitObjName = intersect.object.name
+        this.sceneMgr.updatePin( intersect, "Down" )
         console.log( hitObjName )
     }
 
@@ -146,6 +148,9 @@ class ThreeMain {
     }
 
     update(){
+
+        
+
 
         if( this.isLoading ){
             this.controls.update()

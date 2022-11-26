@@ -205,21 +205,32 @@ export class SceneMgr extends THREE.Group {
 
     }
 
-    updatePin( intersect ){
+    updatePin( intersect, hitType ){
         if( this.aim != null ){
 
             const targetObj = this.targetHelper
             const startObj = this.startObj
 
-            const hitObjName = intersect.object.name
+            //const hitObjName = intersect.object.name
 
             const p = intersect.point
-            const n = intersect.face.normal.clone()
+            //const n = intersect.face.normal.clone()
 
 
             targetObj.position.set( p.x, startObj.position.y, p.z )
             this.aim.position.set( p.x, p.y+this.aimDist, p.z )
-            //console.log( hitObjName )
+            if( hitType == "Move" ){
+                
+                this.aim.visible = false
+                //console.log( hitObjName )
+            }else if( hitType == "Down" ){
+
+                this.aim.visible = true
+            
+            }else{
+
+            }  
+            
 
         }
         

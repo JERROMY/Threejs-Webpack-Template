@@ -14,7 +14,15 @@ export class Controls {
     ptIsUp = false
 
 
-    aimMoveVScale = 1
+    v = 100
+    ov = 100
+    a = 2
+    f = 0.9
+
+
+    clock = new THREE.Clock()
+
+   
 
     isStartMoveCamera = false
     isDebug = false
@@ -81,8 +89,13 @@ export class Controls {
 
         if( this.isStartMoveCamera ){
 
+            const delta = this.clock.getDelta();
+            //console.log( delta )
+
             let vec = new THREE.Vector3()
-            vec.subVectors( this.targetObj.position, this.followObj.position ).normalize().multiplyScalar( this.aimMoveVScale )
+            vec.subVectors( this.targetObj.position, this.followObj.position ).normalize().multiplyScalar( this.v*delta )
+            
+
             let addVec = new THREE.Vector3()
             
             
@@ -110,9 +123,12 @@ export class Controls {
                 this.aimObj.applyQuaternion(startRotation)
                 this.aimObj.quaternion.slerpQuaternions(startRotation, endRotation, 0.05);
             }
+
+            this.v += this.a
+            
             
 
-            if( d < 1 ){
+            if( d < 5 ){
 
                 this.isStartMoveCamera = false
                 if( !this.isDebug ){
@@ -184,6 +200,8 @@ export class Controls {
                 this.delegate.onPtMove( intersect )
             }else if( hitType == "Down" ){
                 this.delegate.onPtChoose( intersect )
+                this.clock = new THREE.Clock()
+                this.v = this.ov
                 this.isStartMoveCamera = true
                 //this.controls.enabled = false
                 this.removeControl()
