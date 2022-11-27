@@ -16,7 +16,7 @@ export class Controls {
 
     v = 100
     ov = 100
-    a = 2
+    a = 0.2
     f = 0.9
 
 
@@ -40,6 +40,9 @@ export class Controls {
         this.targetObj = targetObj
         this.followObj = followObj
         this.aimObj = aimObj
+
+        this.lookAtObj = null
+
         this.delegate = {
             onPtMove: onPtMove,
             onPtChoose: onPtChoose,
@@ -101,7 +104,7 @@ export class Controls {
             
             addVec.addVectors( this.followObj.position, vec )
             this.followObj.position.set( addVec.x, addVec.y, addVec.z )
-            this.followObj.lookAt( this.targetObj.position )
+            this.followObj.lookAt( this.lookAtObj.position )
             const d = this.targetObj.position.distanceTo( this.followObj.position )
 
             this.followObj.followCube.getWorldPosition( this.followPosi )
@@ -111,24 +114,24 @@ export class Controls {
             if( !this.isDebug ){
                 this.camera.position.set( this.followPosi.x, this.followPosi.y, this.followPosi.z )
                 const startRotation = this.camera.quaternion.clone()
-                this.camera.lookAt( this.followObj.position )
+                this.camera.lookAt( this.lookAtObj.position )
                 const endRotation = this.camera.quaternion.clone()
                 this.camera.applyQuaternion(startRotation)
-                this.camera.quaternion.slerpQuaternions(startRotation, endRotation, 0.05);
+                this.camera.quaternion.slerpQuaternions(startRotation, endRotation, 0.3);
             } else {
                 this.aimObj.position.set( this.followPosi.x, this.followPosi.y, this.followPosi.z )
                 const startRotation = this.aimObj.quaternion.clone()
-                this.aimObj.lookAt( this.followObj.position )
+                this.aimObj.lookAt( this.lookAtObj.position )
                 const endRotation = this.aimObj.quaternion.clone()
                 this.aimObj.applyQuaternion(startRotation)
-                this.aimObj.quaternion.slerpQuaternions(startRotation, endRotation, 0.05);
+                this.aimObj.quaternion.slerpQuaternions(startRotation, endRotation, 0.3);
             }
 
             this.v += this.a
             
             
 
-            if( d < 5 ){
+            if( d < 2 ){
 
                 this.isStartMoveCamera = false
                 if( !this.isDebug ){
@@ -160,7 +163,7 @@ export class Controls {
         //console.log( this.rayCasterObjs )
 
         let isMobile = Utils.checkMobile()
-        let ele = document.getElementsByTagName("canvas")[0];
+        let ele = document.getElementsByTagName( 'canvas' )[0];
 
         if( isMobile ){
             ele.addEventListener( 'touchmove', this.onTouchMove.bind( this ) );
@@ -195,17 +198,61 @@ export class Controls {
         if ( intersects.length > 0 ) {
 
             const intersect = intersects[ 0 ]
+            const hitObj = intersect.object
+            const hitObjName = hitObj.name
             
-            if(hitType == "Move" ){
-                this.delegate.onPtMove( intersect )
-            }else if( hitType == "Down" ){
-                this.delegate.onPtChoose( intersect )
-                this.clock = new THREE.Clock()
-                this.v = this.ov
-                this.isStartMoveCamera = true
-                //this.controls.enabled = false
-                this.removeControl()
+
+            if( !this.isStartMoveCamera ){
+
+
+                if( hitObjName.indexOf( 'floor' ) != -1 ){
+
+                    if(hitType == 'Move' ){
+                        this.delegate.onPtMove( intersect )
+                    }else if( hitType == 'Down' ){
+    
+    
+                        console.log( hitObjName )
+    
+                        this.delegate.onPtChoose( intersect, 'floor' )
+                        this.clock = new THREE.Clock()
+                        this.v = this.ov
+
+                        this.lookAtObj = this.targetObj
+
+                        this.isStartMoveCamera = true
+                        //this.controls.enabled = false
+                        this.removeControl()
+                    }
+
+                }else if( hitObjName.indexOf( "s" ) != -1 ){
+
+                    if(hitType == 'Move' ){
+                    }else if( hitType == 'Down' ){
+    
+    
+                        
+                        this.delegate.onPtChoose( intersect, 'obj' )
+                        this.clock = new THREE.Clock()
+                        this.v = this.ov
+
+
+                        this.lookAtObj = hitObj
+                        //console.log( this.lookAtObj )
+
+                        this.isStartMoveCamera = true
+                        // //this.controls.enabled = false
+                        this.removeControl()
+    
+                        
+                    }
+
+                }
+                
+
             }
+            
+            
             
 
             //console.log( "Move Cursor!" )
@@ -261,7 +308,8 @@ export class Controls {
 
         this.ptIsMove = true
         this.ptIsDown = false
-        this.checkHit( "Move" )
+        this.checkHit( 'Move' )
+        
 
     }
 
@@ -277,7 +325,7 @@ export class Controls {
 
         this.ptIsDown = false
         if( !this.ptIsMove ){
-            console.log( "Hit" )
+            console.log( 'Hit' )
             this.checkHit( "Down" )
         }
 

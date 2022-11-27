@@ -100,6 +100,7 @@ export class SceneMgr extends THREE.Group {
         this.startObj = null
         this.pts = []
         this.floorObjs = []
+        this.selectObjs = []
 
         this.resourcesObj = null
         this.aim = null
@@ -120,6 +121,10 @@ export class SceneMgr extends THREE.Group {
 
                 self.resourcesObj = object.getObjectByName("resources")
                 console.log( self.resourcesObj )
+
+                self.selectObjs = object.getObjectByName( "selected" ).children;
+                
+                console.log( self.selectObjs )
 
                 
                 self.add( object )
@@ -195,6 +200,7 @@ export class SceneMgr extends THREE.Group {
                         console.log( self.startObj )
                     }else{
                         self.pts.push( obj )
+                        
                     }
 
                 }
@@ -202,6 +208,38 @@ export class SceneMgr extends THREE.Group {
                 //console.log( obj.material.map );
             }
         });
+
+    }
+
+    updateSelect(){
+        const selObjsNum = this.selectObjs.length
+        if( selObjsNum > 0 ){
+
+            for( let i = 0 ; i < selObjsNum ; i++ ){
+                const selObj = this.selectObjs[ i ]
+                selObj.rotation.y += 0.02
+            }
+
+        }
+        
+    }
+
+    hitSel( intersect ){
+
+        const targetObj = this.targetHelper
+        const startObj = this.startObj
+
+        const hitObjName = intersect.object.name
+        const nameArr = hitObjName.split( '_' )
+        const preStr = nameArr[ 0 ]
+        const idStr = nameArr[ 1 ]
+        const id = parseInt( idStr )
+        console.log( id )
+        const hitPt = this.pts[ id ].position
+
+        targetObj.position.set( hitPt.x, startObj.position.y, hitPt.z )
+        
+
 
     }
 

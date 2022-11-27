@@ -44,7 +44,7 @@ class ThreeMain {
         console.log("Three JS Ready")
     
 
-        this.camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 10000 )
+        this.camera = new THREE.PerspectiveCamera( 55, window.innerWidth / window.innerHeight, 0.01, 6000 )
         this.camera.position.z = 1000 //0.35 0 1200
         this.camera.position.x = 0
         this.camera.position.y = 1000
@@ -105,16 +105,38 @@ class ThreeMain {
     //Control Delegate
     onPtMove( intersect ){
 
-        this.sceneMgr.updatePin( intersect, "Move" )
+        this.sceneMgr.updatePin( intersect, 'Move' )
         
     }
 
-    onPtChoose( intersect ){
+    onPtChoose( intersect, chooseType ){
         
         const hitObjName = intersect.object.name
-        this.sceneMgr.updatePin( intersect, "Down" )
-        //console.log( hitObjName )
+
+        switch ( chooseType ) {
+            case 'floor':
+                
+                this.sceneMgr.updatePin( intersect, 'Down' )
+                //console.log( hitObjName )
+
+
+                break;
+
+            case 'obj':
+
+                this.sceneMgr.hitSel( intersect, 'Down' )
+                
+                break;
+        
+            default:
+                break;
+        }
+
+
+       
+        
     }
+
 
     init(){
 
@@ -127,6 +149,7 @@ class ThreeMain {
 
         this.controls = new Controls( this.camera, this.renderer, this.scene, this.size, this.onPtMove.bind( this ), this.onPtChoose.bind( this ), startObj, aimObj, targetObj, followObj )
         this.controls.rayCasterObjs = this.sceneMgr.floorObjs
+        this.controls.rayCasterObjs = this.controls.rayCasterObjs.concat( this.sceneMgr.selectObjs )
         this.controls.initControls()
         this.controls.initEvent()
         
@@ -155,6 +178,7 @@ class ThreeMain {
 
         if( this.isLoading ){
             this.controls.update()
+            this.sceneMgr.updateSelect()
         }
 
 
