@@ -208,9 +208,6 @@ export class Controls {
             }
             
 
-
-
-
             //console.log( "Move Cursor!" )
         
         
@@ -220,7 +217,6 @@ export class Controls {
    
     onTouchMove( event ) {
 
-        
         this.rayCastTouch( event )
         this.ptMove()
         
@@ -228,7 +224,7 @@ export class Controls {
 
     onPointerMove( event ) {
 
-       
+        
         this.rayCastPointer( event )
         this.ptMove()
     
@@ -249,33 +245,27 @@ export class Controls {
 
     onTouchUp( event ) {
 
+        this.rayCastTouch( event )
         this.ptUp()
     
     }
     
     onPointerUp( event ) {
-    
+        
+        this.rayCastPointer( event )
         this.ptUp()
     
     }
 
     ptMove(){
 
-        if( !this.isStartMoveCamera ){
-            this.checkHit( "Move" )
-            //console.log( "PT Move" )
-        }
-        
-
-        if(this.ptIsDown){
-            this.ptIsMove = true
-            //console.log( "PT Move" )
-        }
+        this.ptIsMove = true
+        this.ptIsDown = false
+        this.checkHit( "Move" )
 
     }
 
     ptDown(){
-
         
         this.ptIsDown = true
         this.ptIsMove = false
@@ -285,16 +275,11 @@ export class Controls {
 
     ptUp(){
 
-        if( !this.ptIsMove ){
-            //console.log(" PT Up ")
-            if( !this.isStartMoveCamera ){
-                this.checkHit( "Down" )
-            }
-            
-        }
-
-        
         this.ptIsDown = false
+        if( !this.ptIsMove ){
+            console.log( "Hit" )
+            this.checkHit( "Down" )
+        }
 
     }
 

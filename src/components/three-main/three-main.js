@@ -110,9 +110,10 @@ class ThreeMain {
     }
 
     onPtChoose( intersect ){
+        
         const hitObjName = intersect.object.name
         this.sceneMgr.updatePin( intersect, "Down" )
-        console.log( hitObjName )
+        //console.log( hitObjName )
     }
 
     init(){
