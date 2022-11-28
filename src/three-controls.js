@@ -125,7 +125,7 @@ export class Controls {
             x: this.targetObj.position.x, 
             y: this.targetObj.position.y, 
             z: this.targetObj.position.z, 
-            duration: 5.0, 
+            duration: 4.0, 
             ease: "cubic.inout", 
             onComplete: this.followObjMoveFinish, 
             onCompleteParams: [ this.followObj, this.lookAtObj, this.camera, this ], 

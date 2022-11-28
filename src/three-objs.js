@@ -105,6 +105,7 @@ export class SceneMgr extends THREE.Group {
         this.resourcesObj = null
         this.aim = null
         this.aimDist = 1
+        this.centerObj = null
 
     }
 
@@ -178,23 +179,27 @@ export class SceneMgr extends THREE.Group {
             if( obj.type === "Mesh" ){
 
                 if( obj.material.map != null ){
-                    if( obj.name != "pin" ){
+                    if( obj.name != 'pin' || obj.name != 'center' ){
                         obj.material.map.encoding = THREE.sRGBEncoding
+                    }
+
+                    if( obj.name == 'center' ){
+                        self.centerObj = obj
                     }
                     
                 }
 
-                if( obj.name.indexOf( "floor" ) != -1 ){
+                if( obj.name.indexOf( 'floor' ) != -1 ){
                     obj.material.opacity = self.debugAlpha
                     self.floorObjs.push( obj )
                     //console.log( obj )
                 }
 
-                if( obj.name.indexOf( "PT" ) != -1 ){
+                if( obj.name.indexOf( 'PT' ) != -1 ){
                     obj.material.transparent = true
                     obj.material.opacity = self.debugAlpha
 
-                    if( obj.name == "PT0" ){
+                    if( obj.name == 'PT0' ){
                         self.startObj = obj;
                         self.startObj.position.set( self.startObj.position.x, 400, self.startObj.position.z )
                         console.log( self.startObj )
@@ -222,6 +227,16 @@ export class SceneMgr extends THREE.Group {
 
         }
         
+    }
+    updateCenter(){
+        if( this.centerObj != null ){
+            this.centerObj.rotation.y += 0.01
+        }
+    }
+
+    addCenterEffect( mat ){
+        this.centerObj.material = mat.clone()
+        console.log( this.centerObj )
     }
 
     hitSel( intersect ){

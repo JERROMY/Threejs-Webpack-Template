@@ -24,6 +24,9 @@ class ThreeMain {
         h: 0
     }
 
+    startFOV = 70
+    targetFOV = 55
+
     intersection = {
         intersects: false,
         point: new THREE.Vector3(),
@@ -33,8 +36,12 @@ class ThreeMain {
     isLoading = false
 
     initTween
+    fovTween
 
-   
+    cubeRenderTarget
+    cubeCamera
+    cubeMat
+    sphere
 
 
     constructor( threeData ) {
@@ -47,23 +54,40 @@ class ThreeMain {
         console.log("Three JS Ready")
     
 
-        this.camera = new THREE.PerspectiveCamera( 55, window.innerWidth / window.innerHeight, 0.01, 6000 )
-        this.camera.position.z = 0 //0.35 0 1200
+        this.camera = new THREE.PerspectiveCamera( this.startFOV, window.innerWidth / window.innerHeight, 0.01, 6000 )
+        this.camera.position.z = 300 //0.35 0 1200
         this.camera.position.x = 0
-        this.camera.position.y = 5000
+        this.camera.position.y = 300
         this.camera.rotation.y = -Math.PI / 2
-        this.camera.lookAt( new THREE.Vector3(0, 10000, 0) )
+        //this.camera.lookAt( new THREE.Vector3(0, 0, 0) )
 
 
         this.scene = new THREE.Scene()
+        this.scene.visible = false
         this.scene.background = new THREE.Color( 0x000000 );
         //this.scene.add( this.amL )
 
+        this.cubeRenderTarget = new THREE.WebGLCubeRenderTarget( 256 )
+        this.cubeRenderTarget.texture.type = THREE.HalfFloatType
+
+        this.cubeCamera = new THREE.CubeCamera( 500, 10000, this.cubeRenderTarget )
+
+        this.cubeMat = new THREE.MeshStandardMaterial( {
+            envMap: this.cubeRenderTarget.texture,
+            color: 0xffffff,
+            roughness: 0.05,
+            metalness: 1
+        } )
+
+        // this.sphere = new THREE.Mesh( new THREE.IcosahedronGeometry( 100, 8 ), this.cubeMat );
+        // this.scene.add( this.sphere );
+        // this.sphere.position.y = 800
 
         this.renderer = new THREE.WebGLRenderer({ 
             antialias: true, 
             powerPreference: "high-performance",
             precision: "highp",
+            debug: false,
             logarithmicDepthBuffer: true,
                 
         })
@@ -71,6 +95,8 @@ class ThreeMain {
         this.renderer.setPixelRatio( window.devicePixelRatio )
         this.renderer.setSize( window.innerWidth, window.innerHeight )
         this.renderer.outputEncoding = THREE.sRGBEncoding
+        this.renderer.toneMapping = THREE.ACESFilmicToneMapping
+        this.renderer.toneMappingExposure = 1.0
         this.container.appendChild( this.renderer.domElement )
         
         this.controls = null
@@ -80,6 +106,25 @@ class ThreeMain {
 
         
 
+    }
+
+    startMoveFov(){
+
+        if(this.fovTween != null){
+            this.fovTween.kill();
+        }
+
+
+        this.fovTween = gsap.to( this.camera, { 
+            fov: this.targetFOV,
+            delay: 0.1,
+            duration: 2.0, 
+            ease: "cubic.inout",
+            onUpdate: this.moveCameraFovUpdate,
+            onComplete: this.moveCameraFovComplete, 
+            onUpdateParams: [ this ],
+            onCompleteParams: [ this ],
+        })
     }
 
     initCamera(){
@@ -93,7 +138,7 @@ class ThreeMain {
             x: 0, 
             y: Math.PI/2, 
             z: 0, 
-            duration: 1.0, 
+            duration: 2.0, 
             ease: "cubic.inout", 
             onComplete: this.moveCameraComplete, 
             onCompleteParams: [ this ],
@@ -106,7 +151,18 @@ class ThreeMain {
         p.init()
         p.isLoading = true
         p.threeData.LoadingDiv.hide()
+        p.scene.visible = true
+        //p.sceneMgr.addCenterEffect( p.cubeMat )
+        //p.threeData.CoverDiv.hide()
         
+    }
+
+    moveCameraFovComplete( p ){
+        p.controls.initEvent()
+    }
+
+    moveCameraFovUpdate( p ){
+        p.camera.updateProjectionMatrix()
     }
 
 
@@ -184,7 +240,9 @@ class ThreeMain {
         this.controls.rayCasterObjs = this.sceneMgr.floorObjs
         this.controls.rayCasterObjs = this.controls.rayCasterObjs.concat( this.sceneMgr.selectObjs )
         this.controls.initControls()
-        this.controls.initEvent()
+        
+
+        this.startMoveFov()
         
 
         
@@ -193,6 +251,7 @@ class ThreeMain {
 
 
     }
+
 
 
     //Scene Delegate
@@ -212,6 +271,9 @@ class ThreeMain {
         if( this.isLoading ){
             this.controls.update()
             this.sceneMgr.updateSelect()
+            this.sceneMgr.updateCenter()
+            this.cubeCamera.update( this.renderer, this.scene )
+
         }
 
 

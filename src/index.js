@@ -9,7 +9,8 @@ import ThreeMain from "./components/three-main/three-main"
 import './main.scss'
 
 const container3D = new Container3D()
-container3D.render()
+container3D.render( 'container-3d', 'container-3d' )
+
 
 const container2D = new Container2D()
 container2D.render()
@@ -20,6 +21,7 @@ container2D.text( "loading" )
 
 const threeData = new ThreeData()
 threeData.LoadingDiv = container2D
+//threeData.CoverDiv = containerCover
 
 const threeMain = new ThreeMain( threeData )
 
