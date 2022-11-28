@@ -42,7 +42,7 @@ export class TargetFollowHelper extends THREE.Group {
         
         super()
 
-        this.distCameraFromTarget = 0.01
+        this.distCameraFromTarget = 0.1
 
         this.aimTarget = new THREE.AxesHelper( 10 )
         this.aimTarget.visible = true

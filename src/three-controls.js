@@ -14,11 +14,11 @@ export class Controls {
     ptIsDown = false
     ptIsUp = false
 
-
+    offsetY = 0
    
 
     isStartMoveCamera = false
-    isDebug = false
+    //isDebug = false
 
 
     camera_tween
@@ -51,8 +51,8 @@ export class Controls {
     initControls(){
 
         this.centerPosi.set( 0, this.startObj.position.y, 0 )
-        this.aimObj.position.set( this.startObj.position.x, this.startObj.position.y, this.startObj.position.z - this.distCameraFromTarget )
-        this.followObj.position.set( this.startObj.position.x, this.startObj.position.y, this.startObj.position.z - this.distCameraFromTarget )
+        this.aimObj.position.set( this.startObj.position.x, this.startObj.position.y, this.startObj.position.z - this.followObj.distCameraFromTarget )
+        this.followObj.position.set( this.startObj.position.x, this.startObj.position.y, this.startObj.position.z - this.followObj.distCameraFromTarget )
         this.followObj.lookAt( this.centerPosi )
         
         this.followObj.followCube.getWorldPosition( this.followPosi )
@@ -87,52 +87,31 @@ export class Controls {
 
         if( this.isStartMoveCamera ){
 
-            // if( !this.isDebug ){
+            if( !this.isDebug ){
                 
-            //     const startRotation = this.camera.quaternion.clone()
-            //     this.camera.lookAt( this.lookAtObj.position )
-            //     const endRotation = this.camera.quaternion.clone()
-            //     this.camera.applyQuaternion(startRotation)
-            //     this.camera.quaternion.slerpQuaternions(startRotation, endRotation, 0.3);
-            // } else {
-            //     this.aimObj.position.set( this.followPosi.x, this.followPosi.y, this.followPosi.z )
-            //     const startRotation = this.aimObj.quaternion.clone()
-            //     this.aimObj.lookAt( this.lookAtObj.position )
-            //     const endRotation = this.aimObj.quaternion.clone()
-            //     this.aimObj.applyQuaternion(startRotation)
-            //     this.aimObj.quaternion.slerpQuaternions(startRotation, endRotation, 0.3);
-            // }
+                const startRotation = this.camera.quaternion.clone()
+                const lookAtVec = new THREE.Vector3( this.lookAtObj.position.x, this.lookAtObj.position.y + this.offsetY, this.lookAtObj.position.z  )
+                this.camera.lookAt(lookAtVec )
+                const endRotation = this.camera.quaternion.clone()
+                this.camera.applyQuaternion(startRotation)
+                this.camera.quaternion.slerpQuaternions(startRotation, endRotation, 0.2);
+
+            } else {
+
+                //this.aimObj.position.set( this.followPosi.x, this.followPosi.y, this.followPosi.z )
+                const startRotation = this.aimObj.quaternion.clone()
+                const lookAtVec = new THREE.Vector3( this.lookAtObj.position.x, this.lookAtObj.position.y + this.offsetY, this.lookAtObj.position.z  )
+                this.aimObj.lookAt(lookAtVec )
+                const endRotation = this.aimObj.quaternion.clone()
+                this.aimObj.applyQuaternion(startRotation)
+                this.aimObj.quaternion.slerpQuaternions(startRotation, endRotation, 0.2);
+            }
 
 
 
         }
 
         //console.log( "Move!" )
-
-    }
-
-    startLookAtCamera(){
-
-        this.time = { t:0 };
-
-        if(this.camera_tween != null){
-            this.camera_tween.kill();
-        }
-
-        const startRotation = this.camera.quaternion.clone()
-        this.camera.lookAt( this.lookAtObj.position )
-        const endRotation = this.camera.quaternion.clone()
-        this.camera.applyQuaternion(startRotation)
-        
-        this.camera_tween = gsap.to( this.time, {
-            duration: 3,
-            t:1,
-            ease: "cubic.inout",
-            onCompleteParams:[startRotation, endRotation, this.time, this],
-            onComplete: this.onLookAtComplete,
-            onUpdateParams:[startRotation, endRotation, this.time, this],
-            onUpdate: this.onLookAtUpdate,
-        });
 
     }
 
@@ -146,37 +125,44 @@ export class Controls {
             x: this.targetObj.position.x, 
             y: this.targetObj.position.y, 
             z: this.targetObj.position.z, 
-            duration: 3, 
+            duration: 5.0, 
             ease: "cubic.inout", 
             onComplete: this.followObjMoveFinish, 
-            onCompleteParams: [ this.followObj, this.targetObj, this.camera, this ], 
+            onCompleteParams: [ this.followObj, this.lookAtObj, this.camera, this ], 
             onUpdate: this.followObjMoveUpdate, 
-            onUpdateParams: [ this.followObj, this.targetObj, this.camera, this ]
+            onUpdateParams: [ this.followObj, this.lookAtObj, this.camera, this ]
         })
 
     }
 
-    onLookAtComplete(st, end, t, p){
-
-    }
-    
-
-    onLookAtUpdate(st, end, t, p){
-        //console.log( t )
-        p.camera.quaternion.slerpQuaternions(st, end, t.t);
-    }
-
     followObjMoveFinish(f, t, c, p){
+        
+        //console.log( 'Move Finish' )
         p.isStartMoveCamera = false
         p.initOrbit()
-        //console.log( 'Move Finish' )
+        
     }
 
     followObjMoveUpdate(f, t, c, p){
 
-        f.lookAt( p.lookAtObj.position )
+        //console.log( t.position )
+        const d = t.position.distanceTo( f.position )
+        if( d > 5 ){
+            f.lookAt( t.position )
+        }
+
+        //f.lookAt( t.position )
         f.followCube.getWorldPosition( p.followPosi )
-        c.position.set( p.followPosi.x, p.followPosi.y, p.followPosi.z )
+
+        if( p.isDebug ){
+
+            //console.log( d )
+
+            p.aimObj.position.set( p.followPosi.x, p.followPosi.y, p.followPosi.z )
+        }else{
+            c.position.set( p.followPosi.x, p.followPosi.y, p.followPosi.z )
+        }
+        
         //c.lookAt( f.position )
 
         //console.log( followPosi )
@@ -251,7 +237,7 @@ export class Controls {
                         //this.controls.enabled = false
                         this.removeControl()
                         this.startMoveCamera()
-                        this.startLookAtCamera()
+                        //this.startLookAtCamera()
                     }
 
                 }else if( hitObjName.indexOf( "s" ) != -1 ){
@@ -273,7 +259,7 @@ export class Controls {
                         // //this.controls.enabled = false
                         this.removeControl()
                         this.startMoveCamera()
-                        this.startLookAtCamera()
+                        //this.startLookAtCamera()
     
                         
                     }

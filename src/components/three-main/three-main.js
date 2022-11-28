@@ -3,6 +3,7 @@ import * as THREE from 'three'
 
 import { SceneMgr } from '../../three-objs'
 import { Controls } from '../../three-controls'
+import gsap from "gsap"
 
 
 class ThreeMain {
@@ -31,6 +32,8 @@ class ThreeMain {
 
     isLoading = false
 
+    initTween
+
    
 
 
@@ -48,6 +51,7 @@ class ThreeMain {
         this.camera.position.z = 1000 //0.35 0 1200
         this.camera.position.x = 0
         this.camera.position.y = 1000
+        this.camera.rotation.y = -Math.PI / 2
         this.camera.lookAt( new THREE.Vector3(0, 0, 0) )
 
 
@@ -78,6 +82,34 @@ class ThreeMain {
 
     }
 
+    initCamera(){
+
+        if(this.initTween != null){
+            this.initTween.kill();
+        }
+
+
+        this.initTween = gsap.to( this.camera.rotation, {
+            x: 0, 
+            y: Math.PI/2, 
+            z: 0, 
+            duration: 3.0, 
+            ease: "cubic.inout", 
+            onComplete: this.moveCameraComplete, 
+            onCompleteParams: [ this ],
+        })
+    }
+
+    moveCameraComplete( p ){
+
+        p.camera.rotation.y = 0
+        p.init()
+        p.animate()
+        p.isLoading = true
+        p.threeData.LoadingDiv.hide()
+        
+    }
+
 
     //Scene Delegate
     onSceneProcess( p ){
@@ -87,8 +119,7 @@ class ThreeMain {
 
     onSceneFinsh( sceneObj ){
 
-        this.isLoading = true
-        this.threeData.LoadingDiv.hide()
+        
 
         //console.log( this )
         console.log( "Scene Load Finish!" )
@@ -98,8 +129,10 @@ class ThreeMain {
 
         this.initEvent()
         this.onWindowResize()
-        this.init()
-        this.animate()
+        this.initCamera()
+
+        // this.init()
+        
     }
 
     //Control Delegate
