@@ -48,11 +48,11 @@ class ThreeMain {
     
 
         this.camera = new THREE.PerspectiveCamera( 55, window.innerWidth / window.innerHeight, 0.01, 6000 )
-        this.camera.position.z = 1000 //0.35 0 1200
+        this.camera.position.z = 0 //0.35 0 1200
         this.camera.position.x = 0
-        this.camera.position.y = 1000
+        this.camera.position.y = 5000
         this.camera.rotation.y = -Math.PI / 2
-        this.camera.lookAt( new THREE.Vector3(0, 0, 0) )
+        this.camera.lookAt( new THREE.Vector3(0, 10000, 0) )
 
 
         this.scene = new THREE.Scene()
@@ -93,7 +93,7 @@ class ThreeMain {
             x: 0, 
             y: Math.PI/2, 
             z: 0, 
-            duration: 3.0, 
+            duration: 1.0, 
             ease: "cubic.inout", 
             onComplete: this.moveCameraComplete, 
             onCompleteParams: [ this ],
@@ -104,7 +104,6 @@ class ThreeMain {
 
         p.camera.rotation.y = 0
         p.init()
-        p.animate()
         p.isLoading = true
         p.threeData.LoadingDiv.hide()
         
@@ -126,10 +125,11 @@ class ThreeMain {
 
         this.scene.add( sceneObj )
     
-
         this.initEvent()
         this.onWindowResize()
+        this.animate()
         this.initCamera()
+        
 
         // this.init()
         
