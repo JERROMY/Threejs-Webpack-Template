@@ -71,6 +71,7 @@ export class Controls {
         this.controls = new OrbitControls( this.camera, this.renderer.domElement )
         this.controls.enableDamping = true
         this.controls.dampingFactor = 0.05
+        this.controls.rotateSpeed = -0.35
         this.controls.target = this.followObj.position
         this.controls.minDistance = this.followObj.distCameraFromTarget
         this.controls.maxDistance = this.followObj.distCameraFromTarget
@@ -94,7 +95,7 @@ export class Controls {
                 this.camera.lookAt(lookAtVec )
                 const endRotation = this.camera.quaternion.clone()
                 this.camera.applyQuaternion(startRotation)
-                this.camera.quaternion.slerpQuaternions(startRotation, endRotation, 0.2);
+                this.camera.quaternion.slerpQuaternions(startRotation, endRotation, 0.35);
 
             } else {
 
@@ -104,7 +105,7 @@ export class Controls {
                 this.aimObj.lookAt(lookAtVec )
                 const endRotation = this.aimObj.quaternion.clone()
                 this.aimObj.applyQuaternion(startRotation)
-                this.aimObj.quaternion.slerpQuaternions(startRotation, endRotation, 0.2);
+                this.aimObj.quaternion.slerpQuaternions(startRotation, endRotation, 0.35);
             }
 
 
@@ -125,7 +126,7 @@ export class Controls {
             x: this.targetObj.position.x, 
             y: this.targetObj.position.y, 
             z: this.targetObj.position.z, 
-            duration: 4.0, 
+            duration: 2.0, 
             ease: "cubic.inout", 
             onComplete: this.followObjMoveFinish, 
             onCompleteParams: [ this.followObj, this.lookAtObj, this.camera, this ], 
@@ -213,58 +214,60 @@ export class Controls {
             const intersect = intersects[ 0 ]
             const hitObj = intersect.object
             const hitObjName = hitObj.name
+
+            if( hitObjName.indexOf( 'floor' ) != -1 ){
+
+            if(hitType == 'Move' ){
+                //this.delegate.onPtMove( intersect )
+            }else if( hitType == 'Down' ){
+
+
+                console.log( hitObjName )
+
+                this.delegate.onPtChoose( intersect, 'floor' )
+                //this.clock = new THREE.Clock()
+                this.v = this.ov
+
+                this.lookAtObj = this.targetObj
+
+                this.isStartMoveCamera = true
+                //this.controls.enabled = false
+                this.removeControl()
+                this.startMoveCamera()
+                //this.startLookAtCamera()
+            }
+
+        }else if( hitObjName.indexOf( "s" ) != -1 ){
+
+            if(hitType == 'Move' ){
+            }else if( hitType == 'Down' ){
+
+
+                
+                this.delegate.onPtChoose( intersect, 'obj' )
+                //this.clock = new THREE.Clock()
+                this.v = this.ov
+
+
+                this.lookAtObj = hitObj
+                //console.log( this.lookAtObj )
+
+                this.isStartMoveCamera = true
+                // //this.controls.enabled = false
+                this.removeControl()
+                this.startMoveCamera()
+                //this.startLookAtCamera()
+
+                
+            }
+
+        }
             
 
             if( !this.isStartMoveCamera ){
 
 
-                if( hitObjName.indexOf( 'floor' ) != -1 ){
-
-                    if(hitType == 'Move' ){
-                        this.delegate.onPtMove( intersect )
-                    }else if( hitType == 'Down' ){
-    
-    
-                        console.log( hitObjName )
-    
-                        this.delegate.onPtChoose( intersect, 'floor' )
-                        //this.clock = new THREE.Clock()
-                        this.v = this.ov
-
-                        this.lookAtObj = this.targetObj
-
-                        this.isStartMoveCamera = true
-                        //this.controls.enabled = false
-                        this.removeControl()
-                        this.startMoveCamera()
-                        //this.startLookAtCamera()
-                    }
-
-                }else if( hitObjName.indexOf( "s" ) != -1 ){
-
-                    if(hitType == 'Move' ){
-                    }else if( hitType == 'Down' ){
-    
-    
-                        
-                        this.delegate.onPtChoose( intersect, 'obj' )
-                        //this.clock = new THREE.Clock()
-                        this.v = this.ov
-
-
-                        this.lookAtObj = hitObj
-                        //console.log( this.lookAtObj )
-
-                        this.isStartMoveCamera = true
-                        // //this.controls.enabled = false
-                        this.removeControl()
-                        this.startMoveCamera()
-                        //this.startLookAtCamera()
-    
-                        
-                    }
-
-                }
+                
                 
 
             }

@@ -95,8 +95,8 @@ class ThreeMain {
         this.renderer.setPixelRatio( window.devicePixelRatio )
         this.renderer.setSize( window.innerWidth, window.innerHeight )
         this.renderer.outputEncoding = THREE.sRGBEncoding
-        this.renderer.toneMapping = THREE.ACESFilmicToneMapping
-        this.renderer.toneMappingExposure = 1.0
+        //this.renderer.toneMapping = THREE.ACESFilmicToneMapping
+        //this.renderer.toneMappingExposure = 1.0
         this.container.appendChild( this.renderer.domElement )
         
         this.controls = null
