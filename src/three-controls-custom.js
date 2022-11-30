@@ -96,12 +96,20 @@ export class Controls {
         // this.camera.position.x = targetPosiX
 		// this.camera.position.y = targetPosiY
 		// this.camera.position.z = targetPosiZ
-        this.camera.lookAt( this.tempTargetPosi )
+
+        const startRotation = this.camera.quaternion.clone()
+        const lookAtVec = new THREE.Vector3( this.lookAtObj.position.x, this.lookAtObj.position.y, this.lookAtObj.position.z  )
+        this.camera.lookAt( lookAtVec )
+        const endRotation = this.camera.quaternion.clone()
+        this.camera.applyQuaternion(startRotation)
+        this.camera.quaternion.slerpQuaternions( startRotation, endRotation, 0.05 )
+        
 
 
     }
 
     startMoveFollow(){
+        this.isStartMoveCamera = true
 
         if(this.follow_tween != null){
             this.follow_tween.kill()
@@ -123,7 +131,7 @@ export class Controls {
     }
 
     followObjMoveFinish( self ){
-
+        self.isStartMoveCamera = false
     }
 
     followObjMoveUpdate( self ){
@@ -136,6 +144,7 @@ export class Controls {
         this.aimObj.position.set( this.startObj.position.x, this.startObj.position.y, this.startObj.position.z )
         this.followObj.position.set( this.startObj.position.x, this.startObj.position.y, this.startObj.position.z )
         this.tempTargetPosi = this.followObj.position
+        this.lookAtObj = this.followObj
         this.followObj.lookAt( this.centerPosi )
         
 
@@ -184,6 +193,7 @@ export class Controls {
                     this.clickMode = 'floor'
 
                     this.tempTargetPosi = this.followObj.position
+                    this.lookAtObj = this.followObj
 
                     this.delegate.onPtChoose( intersect, 'floor', this.isDragging )
                     this.startMoveFollow()
@@ -221,9 +231,9 @@ export class Controls {
             
 
         }else{
-            this.ptIsDown = false
-            this.isDragging = false
-            this.ptIsMove = false
+            //this.ptIsDown = false
+            //this.isDragging = false
+            //this.ptIsMove = false
             this.delegate.onPtHide()
         }
     }
