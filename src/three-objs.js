@@ -243,8 +243,13 @@ export class SceneMgr extends THREE.Group {
         const nameArr = hitObjName.split( '_' )
         const preStr = nameArr[ 0 ]
         const idStr = nameArr[ 1 ]
-        const id = parseInt( idStr )
-        console.log( id )
+        let id = parseInt( idStr )
+        //console.log( id )
+
+        if(id > 9){
+            id = 10
+        }
+
         const hitPt = this.pts[ id ].position
 
         targetObj.position.set( hitPt.x, startObj.position.y, hitPt.z )
@@ -292,8 +297,9 @@ export class SceneMgr extends THREE.Group {
                 
                 //console.log( hitObjName )
             }else if( hitType == "Down" ){
-
-                this.aim.visible = false
+                
+                this.aim.visible = true
+                
             
             }else{
 

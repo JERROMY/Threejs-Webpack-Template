@@ -284,8 +284,8 @@ class ThreeMain {
         if( this.isLoading ){
             
             this.controls.update()
-            //this.sceneMgr.updateSelect()
-            //this.sceneMgr.updateCenter()
+            this.sceneMgr.updateSelect()
+            this.sceneMgr.updateCenter()
             //this.cubeCamera.update( this.renderer, this.scene )
 
         }

@@ -132,6 +132,9 @@ export class Controls {
 
     followObjMoveFinish( self ){
         self.isStartMoveCamera = false
+        //self.ptIsDown = false
+        //self.isDragging = false
+        //self.ptIsMove = false
     }
 
     followObjMoveUpdate( self ){
@@ -210,12 +213,19 @@ export class Controls {
 
                     this.clickMode = 'obj'
                     this.delegate.onPtChoose( intersect, 'obj' )
+
+                    this.tempTargetPosi = this.followObj.position
+                    this.lookAtObj = hitObj
+                    
+                    this.startMoveFollow()
                     
 
                     
                 }
 
             }
+
+            
             
 
             
@@ -231,9 +241,7 @@ export class Controls {
             
 
         }else{
-            //this.ptIsDown = false
-            //this.isDragging = false
-            //this.ptIsMove = false
+            
             this.delegate.onPtHide()
         }
     }
@@ -272,19 +280,26 @@ export class Controls {
 
     ptMove( event ){
 
-        this.ptIsMove = true
-        //this.ptIsDown = false
+        //console.log( event )
 
-        this.isDragging = false
+        this.ptIsMove = false
+        //this.ptIsDown = false
 
         if( this.ptIsDown ){
 
-            // Dragging Rotate
-            // console.log( "Move" )
-
-            this.isDragging = true
-            this.lon = ( this.onPointerDownPointerX - event.clientX ) * 0.1 + this.onPointerDownLon
-			this.lat = ( this.onPointerDownPointerY - event.clientY ) * 0.1 + this.onPointerDownLat
+            this.lon = ( this.onPointerDownPointerX - event.clientX ) * 0.2 + this.onPointerDownLon
+			this.lat = ( this.onPointerDownPointerY - event.clientY ) * 0.2 + this.onPointerDownLat
+            
+            const offset2D = new THREE.Vector2( this.lon, this.lat )
+            const d = offset2D.length()
+            if( d > 30 ){
+                this.isDragging = true
+                this.ptIsMove = true
+            }else{
+                this.isDragging = false
+                this.ptIsMove = false
+            }
+        
         }
 
         this.checkHit( 'Move' )
@@ -309,12 +324,15 @@ export class Controls {
 
     ptUp( event ){
 
-        this.ptIsDown = false
-        this.isDragging = false
+
         if( !this.ptIsMove ){
-            //console.log( 'Hit' )
+            console.log( 'Hit' )
             this.checkHit( "Down" )
         }
+
+        this.ptIsDown = false
+        this.isDragging = false
+        this.ptIsMove = false
 
     }
 
