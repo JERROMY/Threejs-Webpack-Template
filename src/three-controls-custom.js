@@ -22,7 +22,7 @@ export class Controls {
 
 
     camera_tween
-    follower_tween
+    follow_tween
 
     time = { t:0 }
     
@@ -39,9 +39,11 @@ export class Controls {
     onPointerDownLon = 0
 	onPointerDownLat = 0
 
+    tempTargetPosi
 
 
-    constructor( camera, renderer, scene, size, onPtMove, onPtChoose, startObj, aimObj, targetObj, followObj ) {
+
+    constructor( camera, renderer, scene, size, onPtMove, onPtChoose, onPtHide, startObj, aimObj, targetObj, followObj ) {
         
         
         this.camera = camera
@@ -60,6 +62,7 @@ export class Controls {
 
         this.delegate = {
             onPtMove: onPtMove,
+            onPtHide: onPtHide,
             onPtChoose: onPtChoose,
         }
         
@@ -68,25 +71,62 @@ export class Controls {
 
         this.cameraFromFollowDist = 40
 
+        this.isMobile = Utils.checkMobile()
+        this.isDragging = false
+
+        gsap.registerPlugin()
+
     }
 
     update(){
 
-        this.lat = Math.max( - 85, Math.min( 85, this.lat ) )
+        this.lat = Math.max( - 45, Math.min( 45, this.lat ) )
         this.phi = THREE.MathUtils.degToRad( 90 - this.lat )
 		this.theta = THREE.MathUtils.degToRad( this.lon )
 
-        this.camera.position.x = this.followObj.position.x + ( this.cameraFromFollowDist * Math.sin( this.phi ) * Math.cos( this.theta ) )
-		this.camera.position.y = this.followObj.position.y + ( this.cameraFromFollowDist * Math.cos( this.phi ) )
-		this.camera.position.z = this.followObj.position.z + ( this.cameraFromFollowDist * Math.sin( this.phi ) * Math.sin( this.theta ) )
-        this.camera.lookAt( this.followObj.position )
+        const targetPosiX = this.tempTargetPosi.x + ( this.cameraFromFollowDist * Math.sin( this.phi ) * Math.cos( this.theta ) )
+        const targetPosiY = this.tempTargetPosi.y + ( this.cameraFromFollowDist * Math.cos( this.phi ) )
+        const targetPosiZ = this.tempTargetPosi.z + ( this.cameraFromFollowDist * Math.sin( this.phi ) * Math.sin( this.theta ) )
+
+        const targetVec = new THREE.Vector3( targetPosiX, targetPosiY, targetPosiZ )
+
+        this.camera.position.lerp( targetVec, 0.05 )
+            
+
+        // this.camera.position.x = targetPosiX
+		// this.camera.position.y = targetPosiY
+		// this.camera.position.z = targetPosiZ
+        this.camera.lookAt( this.tempTargetPosi )
 
 
     }
 
-    startMoveCamera(){
+    startMoveFollow(){
 
+        if(this.follow_tween != null){
+            this.follow_tween.kill()
+        }
+
+        this.follow_tween = gsap.to( this.followObj.position, {
+            x: this.targetObj.position.x, 
+            y: this.targetObj.position.y, 
+            z: this.targetObj.position.z, 
+            duration: 2.0, 
+            ease: "cubic.inout", 
+            onComplete: this.followObjMoveFinish, 
+            onCompleteParams: [ this ], 
+            onUpdate: this.followObjMoveUpdate, 
+            onUpdateParams: [ this ]
+        })
         
+
+    }
+
+    followObjMoveFinish( self ){
+
+    }
+
+    followObjMoveUpdate( self ){
 
     }
 
@@ -95,7 +135,9 @@ export class Controls {
         this.centerPosi.set( 0, this.startObj.position.y, 0 )
         this.aimObj.position.set( this.startObj.position.x, this.startObj.position.y, this.startObj.position.z )
         this.followObj.position.set( this.startObj.position.x, this.startObj.position.y, this.startObj.position.z )
+        this.tempTargetPosi = this.followObj.position
         this.followObj.lookAt( this.centerPosi )
+        
 
 
         this.camera.position.set( this.followObj.position.x, this.followObj.position.y, this.followObj.position.z )
@@ -110,7 +152,6 @@ export class Controls {
 
         //console.log( this.rayCasterObjs )
 
-        let isMobile = Utils.checkMobile()
         let ele = document.getElementsByTagName( 'canvas' )[0];
 
         ele.addEventListener( 'pointermove', this.onPointerMove.bind( this ) )
@@ -136,32 +177,37 @@ export class Controls {
 
                 if(hitType == 'Move' ){
 
-                    //this.delegate.onPtMove( intersect )
+                    this.delegate.onPtMove( intersect, this.isDragging )
                 
                 }else if( hitType == 'Down' ){
-
-
-                    console.log( hitObjName )
                     
                     this.clickMode = 'floor'
-                    //this.delegate.onPtChoose( intersect, 'floor' )
+
+                    this.tempTargetPosi = this.followObj.position
+
+                    this.delegate.onPtChoose( intersect, 'floor', this.isDragging )
+                    this.startMoveFollow()
                     
                 }
 
-            }else if( hitObjName.indexOf( "s" ) != -1 ){
+            }
+            
+            if( hitObjName.indexOf( "s" ) != -1 ){
 
                 if(hitType == 'Move' ){
                 }else if( hitType == 'Down' ){
 
 
                     this.clickMode = 'obj'
-                    //this.delegate.onPtChoose( intersect, 'obj' )
+                    this.delegate.onPtChoose( intersect, 'obj' )
                     
 
                     
                 }
 
             }
+            
+
             
 
             if( !this.isStartMoveCamera ){
@@ -174,6 +220,11 @@ export class Controls {
             
             
 
+        }else{
+            this.ptIsDown = false
+            this.isDragging = false
+            this.ptIsMove = false
+            this.delegate.onPtHide()
         }
     }
 
@@ -214,14 +265,22 @@ export class Controls {
         this.ptIsMove = true
         //this.ptIsDown = false
 
+        this.isDragging = false
+
         if( this.ptIsDown ){
-            console.log( "Move" )
+
+            // Dragging Rotate
+            // console.log( "Move" )
+
+            this.isDragging = true
             this.lon = ( this.onPointerDownPointerX - event.clientX ) * 0.1 + this.onPointerDownLon
 			this.lat = ( this.onPointerDownPointerY - event.clientY ) * 0.1 + this.onPointerDownLat
         }
 
+        this.checkHit( 'Move' )
+
         //console.log( "Move" )
-        //this.checkHit( 'Move' )
+        
         
 
     }
@@ -241,9 +300,10 @@ export class Controls {
     ptUp( event ){
 
         this.ptIsDown = false
+        this.isDragging = false
         if( !this.ptIsMove ){
             //console.log( 'Hit' )
-            //this.checkHit( "Down" )
+            this.checkHit( "Down" )
         }
 
     }

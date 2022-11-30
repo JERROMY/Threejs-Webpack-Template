@@ -200,27 +200,33 @@ class ThreeMain {
     }
 
     //Control Delegate
-    onPtMove( intersect ){
+    onPtMove( intersect, controlStatus ){
 
-        this.sceneMgr.updatePin( intersect, 'Move' )
+        this.sceneMgr.updatePin( intersect, 'Move', controlStatus )
         
     }
 
-    onPtChoose( intersect, chooseType ){
+    onPtHide(){
+
+        this.sceneMgr.hidePin()
+        
+    }
+
+    onPtChoose( intersect, chooseType, controlStatus ){
         
         const hitObjName = intersect.object.name
 
         switch ( chooseType ) {
             case 'floor':
                 
-                this.sceneMgr.updatePin( intersect, 'Down' )
+                this.sceneMgr.updatePin( intersect, 'Down', controlStatus )
                 //console.log( hitObjName )
 
                 break;
 
             case 'obj':
 
-                this.sceneMgr.hitSel( intersect, 'Down' )
+                this.sceneMgr.hitSel( intersect, 'Down', controlStatus )
                 
                 break;
         
@@ -243,7 +249,7 @@ class ThreeMain {
         const targetObj = this.sceneMgr.targetHelper
         const followObj = this.sceneMgr.followHelper
 
-        this.controls = new Controls( this.camera, this.renderer, this.scene, this.size, this.onPtMove.bind( this ), this.onPtChoose.bind( this ), startObj, aimObj, targetObj, followObj )
+        this.controls = new Controls( this.camera, this.renderer, this.scene, this.size, this.onPtMove.bind( this ), this.onPtChoose.bind( this ), this.onPtHide.bind( this ), startObj, aimObj, targetObj, followObj )
         this.controls.rayCasterObjs = this.sceneMgr.floorObjs
         this.controls.rayCasterObjs = this.controls.rayCasterObjs.concat( this.sceneMgr.selectObjs )
         this.controls.initControls()
@@ -298,7 +304,7 @@ class ThreeMain {
         this.size.w = window.innerWidth
         this.size.h = window.innerHeight
 
-        console.log( this.size.w + ' ' + this.size.h )
+        //console.log( this.size.w + ' ' + this.size.h )
         //console.log( this )
         //console.log( this.camera )
 

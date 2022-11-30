@@ -1,5 +1,6 @@
 
 import * as THREE from 'three'
+import { Utils } from './utils'
 
 export class Aim extends THREE.Group {
 
@@ -78,7 +79,7 @@ export class SceneMgr extends THREE.Group {
         this.aimHelper.position.set( 0, 500, 0 )
         this.add( this.aimHelper )
 
-        this.followHelper.visible = this.aimHelper.visible = this.targetHelper.visible = true
+        this.followHelper.visible = this.aimHelper.visible = this.targetHelper.visible = false
         
         this.loader = new THREE.ObjectLoader()
         this.totalSize = 102858737
@@ -96,6 +97,8 @@ export class SceneMgr extends THREE.Group {
         this.aim = null
         this.aimDist = 1
         this.centerObj = null
+        this.isMobile = Utils.checkMobile()
+        
 
     }
 
@@ -229,10 +232,12 @@ export class SceneMgr extends THREE.Group {
         console.log( this.centerObj )
     }
 
-    hitSel( intersect ){
+    hitSel( intersect, controlStatus ){
 
         const targetObj = this.targetHelper
         const startObj = this.startObj
+
+        this.aim.visible = false
 
         const hitObjName = intersect.object.name
         const nameArr = hitObjName.split( '_' )
@@ -248,13 +253,18 @@ export class SceneMgr extends THREE.Group {
 
     }
 
-    updatePin( intersect, hitType ){
+    hidePin(){
+        //console.log( "hide PT" )
+        this.aim.visible = false
+    }
+
+    updatePin( intersect, hitType, controlStatus ){
         if( this.aim != null ){
 
             const targetObj = this.targetHelper
             const startObj = this.startObj
 
-            //const hitObjName = intersect.object.name
+            const hitObjName = intersect.object.name
 
             const p = intersect.point
             //const n = intersect.face.normal.clone()
@@ -263,12 +273,27 @@ export class SceneMgr extends THREE.Group {
             targetObj.position.set( p.x, startObj.position.y, p.z )
             this.aim.position.set( p.x, p.y+this.aimDist, p.z )
             if( hitType == "Move" ){
+                if( hitObjName.indexOf( 'floor' ) != -1 ){
+                    if( controlStatus ){
+                        this.aim.visible = false
+                    }else{
+                        if( this.isMobile ){
+                            this.aim.visible = false
+                        }else{
+                            this.aim.visible = true
+                        }
+                    }
+                }else{
+                    this.aim.visible = false
+                }
                 
-                this.aim.visible = false
+
+                
+                
                 //console.log( hitObjName )
             }else if( hitType == "Down" ){
 
-                this.aim.visible = true
+                this.aim.visible = false
             
             }else{
 
