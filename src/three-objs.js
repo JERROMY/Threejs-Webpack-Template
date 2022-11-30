@@ -38,11 +38,9 @@ export class TargetHelper extends THREE.Group {
 
 export class TargetFollowHelper extends THREE.Group {
 
-    constructor( color, color2 ) {
+    constructor( color ) {
         
         super()
-
-        this.distCameraFromTarget = 0.1
 
         this.aimTarget = new THREE.AxesHelper( 10 )
         this.aimTarget.visible = true
@@ -52,14 +50,6 @@ export class TargetFollowHelper extends THREE.Group {
         this.aimCubeMat = new THREE.MeshBasicMaterial( { color: color } )
         this.aimCube = new THREE.Mesh( this.aimCubeGeo, this.aimCubeMat )
         this.add( this.aimCube )
-
-        this.followGeo = new THREE.BoxGeometry( 5, 5, 5 )
-        this.followMat = new THREE.MeshBasicMaterial( { color: color2 } )
-        this.followCube = new THREE.Mesh( this.followGeo, this.followMat )
-        this.add( this.followCube )
-        this.followCube.position.set( 0, 0, -this.distCameraFromTarget )
-        
-        
         
 
     }
@@ -76,7 +66,7 @@ export class SceneMgr extends THREE.Group {
         this.debugAlpha = 0
         this.scenePath = scenePath
 
-        this.followHelper = new TargetFollowHelper( 0xff00ff, 0x0000ff )
+        this.followHelper = new TargetFollowHelper( 0xff00ff )
         this.followHelper.position.set( 0, 0, 0 )
         this.add( this.followHelper )
 
@@ -88,7 +78,7 @@ export class SceneMgr extends THREE.Group {
         this.aimHelper.position.set( 0, 500, 0 )
         this.add( this.aimHelper )
 
-        this.followHelper.visible = this.aimHelper.visible = this.targetHelper.visible = false
+        this.followHelper.visible = this.aimHelper.visible = this.targetHelper.visible = true
         
         this.loader = new THREE.ObjectLoader()
         this.totalSize = 102858737

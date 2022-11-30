@@ -2,7 +2,7 @@
 import * as THREE from 'three'
 
 import { SceneMgr } from '../../three-objs'
-import { Controls } from '../../three-controls'
+import { Controls } from '../../three-controls-custom'
 import gsap from "gsap"
 
 
@@ -43,6 +43,8 @@ class ThreeMain {
     cubeMat
     sphere
 
+    mainCamera
+
 
     constructor( threeData ) {
 
@@ -55,29 +57,18 @@ class ThreeMain {
     
 
         this.camera = new THREE.PerspectiveCamera( this.startFOV, window.innerWidth / window.innerHeight, 0.01, 6000 )
-        this.camera.position.z = 300 //0.35 0 1200
+        this.camera.position.z = 1000 //0.35 0 1200
         this.camera.position.x = 0
-        this.camera.position.y = 300
-        this.camera.rotation.y = -Math.PI / 2
-        //this.camera.lookAt( new THREE.Vector3(0, 0, 0) )
+        this.camera.position.y = 1000
+        //this.camera.rotation.y = -Math.PI / 2
+        this.camera.lookAt( new THREE.Vector3(0, 0, 0) )
 
 
         this.scene = new THREE.Scene()
-        this.scene.visible = false
+        this.scene.visible = true
         this.scene.background = new THREE.Color( 0x000000 );
-        //this.scene.add( this.amL )
-
-        this.cubeRenderTarget = new THREE.WebGLCubeRenderTarget( 256 )
-        this.cubeRenderTarget.texture.type = THREE.HalfFloatType
-
-        this.cubeCamera = new THREE.CubeCamera( 500, 10000, this.cubeRenderTarget )
-
-        this.cubeMat = new THREE.MeshStandardMaterial( {
-            envMap: this.cubeRenderTarget.texture,
-            color: 0xffffff,
-            roughness: 0.05,
-            metalness: 1
-        } )
+        this.scene.add( this.camera )
+    
 
         // this.sphere = new THREE.Mesh( new THREE.IcosahedronGeometry( 100, 8 ), this.cubeMat );
         // this.scene.add( this.sphere );
@@ -105,6 +96,22 @@ class ThreeMain {
         this.sceneMgr.startLoad()
 
         
+
+    }
+
+    addEnvEffect(){
+
+        this.cubeRenderTarget = new THREE.WebGLCubeRenderTarget( 256 )
+        this.cubeRenderTarget.texture.type = THREE.HalfFloatType
+
+        this.cubeCamera = new THREE.CubeCamera( 500, 10000, this.cubeRenderTarget )
+
+        this.cubeMat = new THREE.MeshStandardMaterial( {
+            envMap: this.cubeRenderTarget.texture,
+            color: 0xffffff,
+            roughness: 0.05,
+            metalness: 1
+        } )
 
     }
 
@@ -184,10 +191,11 @@ class ThreeMain {
         this.initEvent()
         this.onWindowResize()
         this.animate()
-        this.initCamera()
         
+        this.threeData.LoadingDiv.hide()
+        this.init()
+        this.isLoading = true
 
-        // this.init()
         
     }
 
@@ -207,7 +215,6 @@ class ThreeMain {
                 
                 this.sceneMgr.updatePin( intersect, 'Down' )
                 //console.log( hitObjName )
-
 
                 break;
 
@@ -242,7 +249,7 @@ class ThreeMain {
         this.controls.initControls()
         
 
-        this.startMoveFov()
+        //this.startMoveFov()
         
 
         
@@ -269,10 +276,11 @@ class ThreeMain {
 
 
         if( this.isLoading ){
+            
             this.controls.update()
-            this.sceneMgr.updateSelect()
-            this.sceneMgr.updateCenter()
-            this.cubeCamera.update( this.renderer, this.scene )
+            //this.sceneMgr.updateSelect()
+            //this.sceneMgr.updateCenter()
+            //this.cubeCamera.update( this.renderer, this.scene )
 
         }
 

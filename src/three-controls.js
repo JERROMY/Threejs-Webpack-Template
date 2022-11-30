@@ -3,6 +3,24 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { Utils } from './utils'
 import gsap from "gsap"
 
+export class MainCamera extends THREE.Group {
+
+    constructor( camera ){
+
+        super()
+
+        this.aimTarget = new THREE.AxesHelper( 20 )
+        this.aimTarget.visible = false
+        this.add( this.aimTarget )
+        
+        this.camera = camera
+        this.add( this.camera )
+        this.camera.position.set( 0, 0, 0)
+
+    }
+
+}
+
 export class Controls {
 
     rayCaster = new THREE.Raycaster()
@@ -24,6 +42,7 @@ export class Controls {
     camera_tween
     follower_tween
     time = { t:0 };
+    clickMode = ''
 
     constructor( camera, renderer, scene, size, onPtMove, onPtChoose, startObj, aimObj, targetObj, followObj ) {
         
@@ -72,45 +91,51 @@ export class Controls {
         this.controls.enableDamping = true
         this.controls.dampingFactor = 0.05
         this.controls.rotateSpeed = -0.35
+        //this.controls.enablePan = true
         this.controls.target = this.followObj.position
         this.controls.minDistance = this.followObj.distCameraFromTarget
-        this.controls.maxDistance = this.followObj.distCameraFromTarget
+        this.controls.maxDistance = this.followObj.distCameraFromTarget*2
+
+
+        //const d2 = this.followObj.position.distanceTo( this.followPosi )
+        //console.log( " =====  " + "  " + d2 )
         // //controls.enablePan = true;
         this.controls.saveState()
         this.controls.reset()
     }
 
+
     update(){
 
         if( this.controls != null ){
-            this.controls.update();
+            this.controls.update()
         }
 
-        if( this.isStartMoveCamera ){
+        // if( this.isStartMoveCamera && this.clickMode == "obj"){
 
-            if( !this.isDebug ){
+        //     if( !this.isDebug ){
                 
-                const startRotation = this.camera.quaternion.clone()
-                const lookAtVec = new THREE.Vector3( this.lookAtObj.position.x, this.lookAtObj.position.y + this.offsetY, this.lookAtObj.position.z  )
-                this.camera.lookAt(lookAtVec )
-                const endRotation = this.camera.quaternion.clone()
-                this.camera.applyQuaternion(startRotation)
-                this.camera.quaternion.slerpQuaternions(startRotation, endRotation, 0.35);
+        //         const startRotation = this.camera.quaternion.clone()
+        //         const lookAtVec = new THREE.Vector3( this.lookAtObj.position.x, this.lookAtObj.position.y + this.offsetY, this.lookAtObj.position.z  )
+        //         this.camera.lookAt(lookAtVec )
+        //         const endRotation = this.camera.quaternion.clone()
+        //         this.camera.applyQuaternion(startRotation)
+        //         this.camera.quaternion.slerpQuaternions(startRotation, endRotation, 0.35)
 
-            } else {
+        //     } else {
 
-                //this.aimObj.position.set( this.followPosi.x, this.followPosi.y, this.followPosi.z )
-                const startRotation = this.aimObj.quaternion.clone()
-                const lookAtVec = new THREE.Vector3( this.lookAtObj.position.x, this.lookAtObj.position.y + this.offsetY, this.lookAtObj.position.z  )
-                this.aimObj.lookAt(lookAtVec )
-                const endRotation = this.aimObj.quaternion.clone()
-                this.aimObj.applyQuaternion(startRotation)
-                this.aimObj.quaternion.slerpQuaternions(startRotation, endRotation, 0.35);
-            }
+        //         //this.aimObj.position.set( this.followPosi.x, this.followPosi.y, this.followPosi.z )
+        //         const startRotation = this.aimObj.quaternion.clone()
+        //         const lookAtVec = new THREE.Vector3( this.lookAtObj.position.x, this.lookAtObj.position.y + this.offsetY, this.lookAtObj.position.z  )
+        //         this.aimObj.lookAt(lookAtVec )
+        //         const endRotation = this.aimObj.quaternion.clone()
+        //         this.aimObj.applyQuaternion(startRotation)
+        //         this.aimObj.quaternion.slerpQuaternions(startRotation, endRotation, 0.35);
+        //     }
 
 
 
-        }
+        // }
 
         //console.log( "Move!" )
 
@@ -122,7 +147,7 @@ export class Controls {
             this.follower_tween.kill();
         }
 
-        this.follower_tween = gsap.to( this.followObj.position, {
+        this.follower_tween = gsap.to( this.controls.target, {
             x: this.targetObj.position.x, 
             y: this.targetObj.position.y, 
             z: this.targetObj.position.z, 
@@ -140,7 +165,8 @@ export class Controls {
         
         //console.log( 'Move Finish' )
         p.isStartMoveCamera = false
-        p.initOrbit()
+        //p.controls.reset()
+        //p.resetOrbit()
         
     }
 
@@ -149,19 +175,24 @@ export class Controls {
         //console.log( t.position )
         const d = t.position.distanceTo( f.position )
         if( d > 5 ){
-            f.lookAt( t.position )
+            //f.lookAt( t.position )
         }
 
         //f.lookAt( t.position )
         f.followCube.getWorldPosition( p.followPosi )
+        //const d2 = f.position.distanceTo( p.followPosi )
+        //console.log( d2 )
 
         if( p.isDebug ){
 
             //console.log( d )
 
-            p.aimObj.position.set( p.followPosi.x, p.followPosi.y, p.followPosi.z )
+            //p.aimObj.position.set( p.followPosi.x, p.followPosi.y, p.followPosi.z )
         }else{
-            c.position.set( p.followPosi.x, p.followPosi.y, p.followPosi.z )
+            //c.position.set( p.followPosi.x, p.followPosi.y, p.followPosi.z )
+            //p.controls.update()
+            //p.controls.saveState()
+            
         }
         
         //c.lookAt( f.position )
@@ -188,6 +219,10 @@ export class Controls {
             ele.addEventListener( 'pointerdown', this.onPointerDown.bind( this ) );
             ele.addEventListener( 'pointerup', this.onPointerUp.bind( this ) );
         }
+    }
+
+    saveControl(){
+
     }
 
     removeControl(){
@@ -217,51 +252,55 @@ export class Controls {
 
             if( hitObjName.indexOf( 'floor' ) != -1 ){
 
-            if(hitType == 'Move' ){
-                //this.delegate.onPtMove( intersect )
-            }else if( hitType == 'Down' ){
+                if(hitType == 'Move' ){
 
-
-                console.log( hitObjName )
-
-                this.delegate.onPtChoose( intersect, 'floor' )
-                //this.clock = new THREE.Clock()
-                this.v = this.ov
-
-                this.lookAtObj = this.targetObj
-
-                this.isStartMoveCamera = true
-                //this.controls.enabled = false
-                this.removeControl()
-                this.startMoveCamera()
-                //this.startLookAtCamera()
-            }
-
-        }else if( hitObjName.indexOf( "s" ) != -1 ){
-
-            if(hitType == 'Move' ){
-            }else if( hitType == 'Down' ){
-
-
+                    //this.delegate.onPtMove( intersect )
                 
-                this.delegate.onPtChoose( intersect, 'obj' )
-                //this.clock = new THREE.Clock()
-                this.v = this.ov
+                }else if( hitType == 'Down' ){
 
 
-                this.lookAtObj = hitObj
-                //console.log( this.lookAtObj )
+                    console.log( hitObjName )
+                    
+                    this.clickMode = 'floor'
+                    this.delegate.onPtChoose( intersect, 'floor' )
+                    
+                    //this.clock = new THREE.Clock()
+                    this.v = this.ov
 
-                this.isStartMoveCamera = true
-                // //this.controls.enabled = false
-                this.removeControl()
-                this.startMoveCamera()
-                //this.startLookAtCamera()
+                    this.lookAtObj = this.targetObj
 
-                
+                    this.isStartMoveCamera = true
+                    //this.controls.enabled = false
+                    //this.removeControl()
+                    this.startMoveCamera()
+                    //this.startLookAtCamera()
+                }
+
+            }else if( hitObjName.indexOf( "s" ) != -1 ){
+
+                if(hitType == 'Move' ){
+                }else if( hitType == 'Down' ){
+
+
+                    this.clickMode = 'obj'
+                    this.delegate.onPtChoose( intersect, 'obj' )
+                    //this.clock = new THREE.Clock()
+                    this.v = this.ov
+
+
+                    this.lookAtObj = hitObj
+                    //console.log( this.lookAtObj )
+
+                    this.isStartMoveCamera = true
+                    // //this.controls.enabled = false
+                    //this.removeControl()
+                    this.startMoveCamera()
+                    //this.startLookAtCamera()
+
+                    
+                }
+
             }
-
-        }
             
 
             if( !this.isStartMoveCamera ){

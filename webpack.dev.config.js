@@ -26,7 +26,7 @@ module.exports = {
         'index':'./src/index.js',
         'three-data':'./src/three-data.js',
         'three-objs':'./src/three-objs.js',
-        'three-controls':'./src/three-controls.js',
+        'three-controls':'./src/three-controls-custom.js',
     },
     output: {
         filename: '[name].[contenthash].js',
