@@ -290,7 +290,7 @@ export class Controls {
 
         //console.log( event )
 
-        this.ptIsMove = false
+        //this.ptIsMove = true
         //this.ptIsDown = false
 
         if( this.ptIsDown ){
@@ -301,7 +301,7 @@ export class Controls {
 
             
             
-            const offset2D = new THREE.Vector2( this.lon, this.lat )
+            const offset2D = new THREE.Vector2( this.targetLon, this.targetLat )
             const d = offset2D.length()
             if( d > 30 ){
                 this.isDragging = true
@@ -335,6 +335,8 @@ export class Controls {
 
     ptUp( event ){
 
+        console.log( this.ptIsMove )
+
 
         if( !this.ptIsMove ){
             console.log( 'Hit' )
@@ -343,7 +345,7 @@ export class Controls {
 
         this.ptIsDown = false
         this.isDragging = false
-        this.ptIsMove = false
+        //this.ptIsMove = false
 
     }
 

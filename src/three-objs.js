@@ -288,7 +288,7 @@ export class SceneMgr extends THREE.Group {
 
             //console.log( d )
 
-            if( d <= 350 ){
+            if( d <= 400 ){
 
                 this.aim.visible = true
                 targetObj.position.set( p.x, startObj.position.y, p.z )
