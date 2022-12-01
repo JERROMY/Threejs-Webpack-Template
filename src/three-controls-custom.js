@@ -92,7 +92,6 @@ export class Controls {
         this.phi = THREE.MathUtils.degToRad( 90 - this.lat )
 		this.theta = THREE.MathUtils.degToRad( this.lon )
 
-
         const targetPosiX = this.tempTargetPosi.x + ( this.cameraFromFollowDist * Math.sin( this.phi ) * Math.cos( this.theta ) )
         const targetPosiY = this.tempTargetPosi.y + ( this.cameraFromFollowDist * Math.cos( this.phi ) )
         const targetPosiZ = this.tempTargetPosi.z + ( this.cameraFromFollowDist * Math.sin( this.phi ) * Math.sin( this.theta ) )
@@ -113,7 +112,6 @@ export class Controls {
         const startRotation = this.camera.quaternion.clone()
         const lookAtVec = new THREE.Vector3( this.lookAtObjPosi.x, this.lookAtObjPosi.y + this.offsetY, this.lookAtObjPosi.z  )
         this.camera.lookAt( lookAtVec )
-
         const endRotation = this.camera.quaternion.clone()
         this.camera.applyQuaternion(startRotation)
         this.camera.quaternion.slerpQuaternions( startRotation, endRotation, 0.05 )
@@ -218,13 +216,13 @@ export class Controls {
                     //console.log( this.lookAtObjs );
 
 
-                   console.log( this.targetLon )
-                   console.log( this.targetLat )
+                    //console.log( this.targetLon )
+                    //console.log( this.targetLat )
 
 
                     this.tempTargetPosi = this.followObj.position
-                    this.lookAtObjPosi = new THREE.Vector3( this.lookAtObjs[ id ].position.x, this.startObj.position.y, this.lookAtObjs[ id ].position.z )
-                    //this.lookAtObjPosi = this.followObj.position
+                    //this.lookAtObjPosi = new THREE.Vector3( this.lookAtObjs[ id ].position.x, this.startObj.position.y, this.lookAtObjs[ id ].position.z )
+                    this.lookAtObjPosi = this.followObj.position
 
 
                     
@@ -299,18 +297,17 @@ export class Controls {
 
         if( this.ptIsDown ){
 
-            if( this.clickMode == 'obj' ){
-                //this.tempTargetPosi = this.followObj.position
-                this.clickMode = ''
-                this.offsetY = 0
-                this.lookAtObjPosi = this.followObj.position
-            }
+            // if( this.clickMode == 'obj' ){
+            //     //this.tempTargetPosi = this.followObj.position
+            //     this.clickMode = ''
+            //     this.offsetY = 0
+            //     this.lookAtObjPosi = this.followObj.position
+            // }
 
 
             this.targetLon = ( this.onPointerDownPointerX - event.clientX ) * 0.15 + this.onPointerDownLon
             this.targetLat = ( this.onPointerDownPointerY - event.clientY ) * 0.15 + this.onPointerDownLat
 
-            
             
             const offset2D = new THREE.Vector2( this.targetLon, this.targetLat )
             const d = offset2D.length()

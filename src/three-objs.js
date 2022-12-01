@@ -288,44 +288,47 @@ export class SceneMgr extends THREE.Group {
 
             //console.log( d )
 
-            if( d <= 400 ){
+            //if( d <= 400 ){
 
-                this.aim.visible = true
-                targetObj.position.set( p.x, startObj.position.y, p.z )
-                this.aim.position.set( p.x, p.y+this.aimDist, p.z )
+                
 
-                if( hitType == "Move" ){
-                    if( hitObjName.indexOf( 'floor' ) != -1 ){
-                        if( controlStatus ){
+            //}else{
+                //this.aim.visible = false
+            //}
+
+
+            this.aim.visible = true
+            targetObj.position.set( p.x, startObj.position.y, p.z )
+            this.aim.position.set( p.x, p.y+this.aimDist, p.z )
+
+            if( hitType == "Move" ){
+                if( hitObjName.indexOf( 'floor' ) != -1 ){
+                    if( controlStatus ){
+                        this.aim.visible = false
+                    }else{
+                        if( this.isMobile ){
                             this.aim.visible = false
                         }else{
-                            if( this.isMobile ){
-                                this.aim.visible = false
-                            }else{
-                                this.aim.visible = true
-                            }
+                            this.aim.visible = true
                         }
-                    }else{
-                        this.aim.visible = false
                     }
-                    
-
-                    
-                    
-                    //console.log( hitObjName )
-                }else if( hitType == "Down" ){
-                    
-                    this.aim.visible = true
-
-                    this.startMoveFollow()
-                    
-                
                 }else{
-
+                    this.aim.visible = false
                 }
+                
 
+                
+                
+                //console.log( hitObjName )
+            }else if( hitType == "Down" ){
+                
+                this.aim.visible = true
+
+                this.startMoveFollow()
+                
+            
             }else{
-                this.aim.visible = false
+
             }
 
             
