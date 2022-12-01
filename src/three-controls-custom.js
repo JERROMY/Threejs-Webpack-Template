@@ -17,12 +17,11 @@ export class Controls {
     offsetY = 0
    
 
-    isStartMoveCamera = false
     //isDebug = false
 
 
     camera_tween
-    follow_tween
+    
 
     time = { t:0 }
     
@@ -39,11 +38,16 @@ export class Controls {
     onPointerDownLon = 0
 	onPointerDownLat = 0
 
+    targetLon = 90
+    targetLat = 0
+
     tempTargetPosi
+    preTargetPosi
+    preLookAtPosi
+    lookAtObjPosi
 
 
-
-    constructor( camera, renderer, scene, size, onPtMove, onPtChoose, onPtHide, startObj, aimObj, targetObj, followObj ) {
+    constructor( camera, renderer, scene, size, onPtMove, onPtChoose, onPtHide, startObj, aimObj, targetObj, followObj, loodAtObjs ) {
         
         
         this.camera = camera
@@ -56,10 +60,9 @@ export class Controls {
         this.startObj = startObj
         this.targetObj = targetObj
         this.followObj = followObj
+        this.lookAtObjs = loodAtObjs
         this.aimObj = aimObj
-
-        this.lookAtObj = null
-
+        
         this.delegate = {
             onPtMove: onPtMove,
             onPtHide: onPtHide,
@@ -69,7 +72,7 @@ export class Controls {
         this.centerPosi = new THREE.Vector3(0, 0, 0)
         this.followPosi = new THREE.Vector3()
 
-        this.cameraFromFollowDist = 40
+        this.cameraFromFollowDist = 10
 
         this.isMobile = Utils.checkMobile()
         this.isDragging = false
@@ -80,66 +83,48 @@ export class Controls {
 
     update(){
 
-        this.lat = Math.max( - 45, Math.min( 45, this.lat ) )
+        //this.followObj.lookAt( this.targetObj.position )
+
+        this.lon += (this.targetLon - this.lon) * 0.05
+		this.lat += (this.targetLat - this.lat) * 0.05
+
+        this.lat = Math.max( - 30, Math.min( 30, this.lat ) )
         this.phi = THREE.MathUtils.degToRad( 90 - this.lat )
 		this.theta = THREE.MathUtils.degToRad( this.lon )
+
 
         const targetPosiX = this.tempTargetPosi.x + ( this.cameraFromFollowDist * Math.sin( this.phi ) * Math.cos( this.theta ) )
         const targetPosiY = this.tempTargetPosi.y + ( this.cameraFromFollowDist * Math.cos( this.phi ) )
         const targetPosiZ = this.tempTargetPosi.z + ( this.cameraFromFollowDist * Math.sin( this.phi ) * Math.sin( this.theta ) )
 
-        const targetVec = new THREE.Vector3( targetPosiX, targetPosiY, targetPosiZ )
+        //const targetVec = new THREE.Vector3( targetPosiX, targetPosiY, targetPosiZ )
 
-        this.camera.position.lerp( targetVec, 0.05 )
+        //this.camera.position.lerp( targetVec, 0.1 )
+        //this.camera.position.set( targetPosiX, targetPosiY, targetPosiZ )
             
 
-        // this.camera.position.x = targetPosiX
-		// this.camera.position.y = targetPosiY
-		// this.camera.position.z = targetPosiZ
+        this.camera.position.x = targetPosiX
+		this.camera.position.y = targetPosiY
+		this.camera.position.z = targetPosiZ
+
+        //const d = this.followObj.position.distanceTo( targetVec )
+        
 
         const startRotation = this.camera.quaternion.clone()
-        const lookAtVec = new THREE.Vector3( this.lookAtObj.position.x, this.lookAtObj.position.y, this.lookAtObj.position.z  )
+        const lookAtVec = new THREE.Vector3( this.lookAtObjPosi.x, this.lookAtObjPosi.y + this.offsetY, this.lookAtObjPosi.z  )
         this.camera.lookAt( lookAtVec )
         const endRotation = this.camera.quaternion.clone()
         this.camera.applyQuaternion(startRotation)
         this.camera.quaternion.slerpQuaternions( startRotation, endRotation, 0.05 )
         
-
-
-    }
-
-    startMoveFollow(){
-        this.isStartMoveCamera = true
-
-        if(this.follow_tween != null){
-            this.follow_tween.kill()
-        }
-
-        this.follow_tween = gsap.to( this.followObj.position, {
-            x: this.targetObj.position.x, 
-            y: this.targetObj.position.y, 
-            z: this.targetObj.position.z, 
-            duration: 2.0, 
-            ease: "cubic.inout", 
-            onComplete: this.followObjMoveFinish, 
-            onCompleteParams: [ this ], 
-            onUpdate: this.followObjMoveUpdate, 
-            onUpdateParams: [ this ]
-        })
+        
+        
         
 
-    }
-
-    followObjMoveFinish( self ){
-        self.isStartMoveCamera = false
-        //self.ptIsDown = false
-        //self.isDragging = false
-        //self.ptIsMove = false
-    }
-
-    followObjMoveUpdate( self ){
 
     }
+
+    
 
     initControls(){
 
@@ -147,7 +132,7 @@ export class Controls {
         this.aimObj.position.set( this.startObj.position.x, this.startObj.position.y, this.startObj.position.z )
         this.followObj.position.set( this.startObj.position.x, this.startObj.position.y, this.startObj.position.z )
         this.tempTargetPosi = this.followObj.position
-        this.lookAtObj = this.followObj
+        this.lookAtObjPosi = this.followObj.position
         this.followObj.lookAt( this.centerPosi )
         
 
@@ -178,6 +163,9 @@ export class Controls {
     }
 
     checkHit( hitType ){
+
+        
+
         const intersects = this.rayCaster.intersectObjects( this.rayCasterObjs );
         if ( intersects.length > 0 ) {
 
@@ -194,12 +182,15 @@ export class Controls {
                 }else if( hitType == 'Down' ){
                     
                     this.clickMode = 'floor'
-
+                    
+                    this.offsetY = 0
                     this.tempTargetPosi = this.followObj.position
-                    this.lookAtObj = this.followObj
+                    this.lookAtObjPosi = this.followObj.position
+
+                    
 
                     this.delegate.onPtChoose( intersect, 'floor', this.isDragging )
-                    this.startMoveFollow()
+                    //this.startMoveFollow()
                     
                 }
 
@@ -210,14 +201,28 @@ export class Controls {
                 if(hitType == 'Move' ){
                 }else if( hitType == 'Down' ){
 
+                    const nameArr = hitObjName.split( '_' )
+                    const preStr = nameArr[ 0 ]
+                    const idStr = nameArr[ 1 ]
+                    let id = parseInt( idStr )
+
+                    console.log(" Click ID: " + id)
+
 
                     this.clickMode = 'obj'
-                    this.delegate.onPtChoose( intersect, 'obj' )
+
+                    //this.offsetY = 50
+                    
+
+                    //console.log( this.lookAtObjs );
+
 
                     this.tempTargetPosi = this.followObj.position
-                    this.lookAtObj = hitObj
+                    //this.lookAtObjPosi = this.lookAtObjs[ id ].position
+                    this.lookAtObj = this.followObj
                     
-                    this.startMoveFollow()
+                    //this.startMoveFollow()
+                    this.delegate.onPtChoose( intersect, 'obj' )
                     
 
                     
@@ -227,21 +232,24 @@ export class Controls {
 
             
             
-
-            
-
-            if( !this.isStartMoveCamera ){
-
-
-                
-                
-
-            }
-            
             
 
         }else{
             
+            //console.log( "========" )
+            //console.log( hitType )
+
+            if( hitType == "Down" ){
+
+                //console.log( "========" )
+                //console.log( hitType )
+
+                if( this.clickMode == 'obj' ){
+                    //this.tempTargetPosi = this.followObj.position
+                    //this.lookAtObjPosi = this.followObj.position
+                }
+            }
+
             this.delegate.onPtHide()
         }
     }
@@ -287,8 +295,11 @@ export class Controls {
 
         if( this.ptIsDown ){
 
-            this.lon = ( this.onPointerDownPointerX - event.clientX ) * 0.2 + this.onPointerDownLon
-			this.lat = ( this.onPointerDownPointerY - event.clientY ) * 0.2 + this.onPointerDownLat
+
+            this.targetLon = ( this.onPointerDownPointerX - event.clientX ) * 0.15 + this.onPointerDownLon
+            this.targetLat = ( this.onPointerDownPointerY - event.clientY ) * 0.15 + this.onPointerDownLat
+
+            
             
             const offset2D = new THREE.Vector2( this.lon, this.lat )
             const d = offset2D.length()

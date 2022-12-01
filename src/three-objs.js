@@ -1,6 +1,7 @@
 
 import * as THREE from 'three'
 import { Utils } from './utils'
+import gsap from "gsap"
 
 export class Aim extends THREE.Group {
 
@@ -19,6 +20,8 @@ export class Aim extends THREE.Group {
 export class TargetHelper extends THREE.Group {
 
     constructor( color ) {
+
+        //this.distCameraFromTarget = 40
         
         super()
         this.aimTarget = new THREE.AxesHelper( 20 )
@@ -90,6 +93,7 @@ export class SceneMgr extends THREE.Group {
 
         this.startObj = null
         this.pts = []
+        this.lookAtObjs = []
         this.floorObjs = []
         this.selectObjs = []
 
@@ -98,6 +102,7 @@ export class SceneMgr extends THREE.Group {
         this.aimDist = 1
         this.centerObj = null
         this.isMobile = Utils.checkMobile()
+        this.follow_tween = null
         
 
     }
@@ -116,9 +121,12 @@ export class SceneMgr extends THREE.Group {
                 self.resourcesObj = object.getObjectByName("resources")
                 console.log( self.resourcesObj )
 
-                self.selectObjs = object.getObjectByName( "selected" ).children;
-                
-                console.log( self.selectObjs )
+                self.selectObjs = object.getObjectByName( "selected" ).children
+                self.lookAtObjs = object.getObjectByName( "ip_stand" ).children
+                self.lookAtObjs = self.lookAtObjs.concat ( object.getObjectByName( "product" ).children )
+
+                //console.log( self.lookAtObjs )                
+                //console.log( self.selectObjs )
 
                 
                 self.add( object )
@@ -162,7 +170,7 @@ export class SceneMgr extends THREE.Group {
         this.aimObj = this.resourcesObj.getObjectByName("pin")
         this.aim = new Aim( this.aimObj )
         this.add( this.aim )
-        this.aim.position.y = 1000
+        //this.aim.position.y = 1000
         //console.log( this.aimObj )
 
 
@@ -253,6 +261,8 @@ export class SceneMgr extends THREE.Group {
         const hitPt = this.pts[ id ].position
 
         targetObj.position.set( hitPt.x, startObj.position.y, hitPt.z )
+
+        this.startMoveFollow()
         
 
 
@@ -268,46 +278,96 @@ export class SceneMgr extends THREE.Group {
 
             const targetObj = this.targetHelper
             const startObj = this.startObj
-
+            const followObj = this.followHelper
             const hitObjName = intersect.object.name
 
             const p = intersect.point
             //const n = intersect.face.normal.clone()
 
+            const d = followObj.position.distanceTo( new THREE.Vector3( p.x, startObj.position.y, p.z ) )
 
-            targetObj.position.set( p.x, startObj.position.y, p.z )
-            this.aim.position.set( p.x, p.y+this.aimDist, p.z )
-            if( hitType == "Move" ){
-                if( hitObjName.indexOf( 'floor' ) != -1 ){
-                    if( controlStatus ){
-                        this.aim.visible = false
-                    }else{
-                        if( this.isMobile ){
+            //console.log( d )
+
+            if( d <= 350 ){
+
+                this.aim.visible = true
+                targetObj.position.set( p.x, startObj.position.y, p.z )
+                this.aim.position.set( p.x, p.y+this.aimDist, p.z )
+
+                if( hitType == "Move" ){
+                    if( hitObjName.indexOf( 'floor' ) != -1 ){
+                        if( controlStatus ){
                             this.aim.visible = false
                         }else{
-                            this.aim.visible = true
+                            if( this.isMobile ){
+                                this.aim.visible = false
+                            }else{
+                                this.aim.visible = true
+                            }
                         }
+                    }else{
+                        this.aim.visible = false
                     }
+                    
+
+                    
+                    
+                    //console.log( hitObjName )
+                }else if( hitType == "Down" ){
+                    
+                    this.aim.visible = true
+
+                    this.startMoveFollow()
+                    
+                
                 }else{
-                    this.aim.visible = false
+
                 }
-                
 
-                
-                
-                //console.log( hitObjName )
-            }else if( hitType == "Down" ){
-                
-                this.aim.visible = true
-                
-            
             }else{
+                this.aim.visible = false
+            }
 
-            }  
+            
             
 
         }
         
+    }
+
+    startMoveFollow(){
+
+        const targetObj = this.targetHelper
+        //const startObj = this.startObj
+        const followObj = this.followHelper
+
+        if(this.follow_tween != null){
+            this.follow_tween.kill()
+        }
+
+        this.follow_tween = gsap.to( followObj.position, {
+            x: targetObj.position.x, 
+            y: targetObj.position.y, 
+            z: targetObj.position.z, 
+            duration: 2.0, 
+            ease: "cubic.inout", 
+            onComplete: this.followObjMoveFinish, 
+            onCompleteParams: [ this ], 
+            onUpdate: this.followObjMoveUpdate, 
+            onUpdateParams: [ this ]
+        })
+        
+
+    }
+
+    followObjMoveFinish( self ){
+        //self.ptIsDown = false
+        //self.isDragging = false
+        //self.ptIsMove = false
+    }
+
+    followObjMoveUpdate( self ){
+
     }
 
 

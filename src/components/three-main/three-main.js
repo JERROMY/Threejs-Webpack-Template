@@ -65,7 +65,7 @@ class ThreeMain {
 
 
         this.scene = new THREE.Scene()
-        this.scene.visible = true
+        this.scene.visible = false
         this.scene.background = new THREE.Color( 0x000000 );
         this.scene.add( this.camera )
     
@@ -191,10 +191,11 @@ class ThreeMain {
         this.initEvent()
         this.onWindowResize()
         this.animate()
+        this.initCamera()
         
-        this.threeData.LoadingDiv.hide()
-        this.init()
-        this.isLoading = true
+        // this.threeData.LoadingDiv.hide()
+        // this.init()
+        // this.isLoading = true
 
         
     }
@@ -248,14 +249,15 @@ class ThreeMain {
         const aimObj = this.sceneMgr.aimHelper
         const targetObj = this.sceneMgr.targetHelper
         const followObj = this.sceneMgr.followHelper
+        const lookAtObjs = this.sceneMgr.lookAtObjs
 
-        this.controls = new Controls( this.camera, this.renderer, this.scene, this.size, this.onPtMove.bind( this ), this.onPtChoose.bind( this ), this.onPtHide.bind( this ), startObj, aimObj, targetObj, followObj )
+        this.controls = new Controls( this.camera, this.renderer, this.scene, this.size, this.onPtMove.bind( this ), this.onPtChoose.bind( this ), this.onPtHide.bind( this ), startObj, aimObj, targetObj, followObj, lookAtObjs )
         this.controls.rayCasterObjs = this.sceneMgr.floorObjs
         this.controls.rayCasterObjs = this.controls.rayCasterObjs.concat( this.sceneMgr.selectObjs )
         this.controls.initControls()
         
 
-        //this.startMoveFov()
+        this.startMoveFov()
         
 
         
