@@ -26,7 +26,7 @@ export class Controls {
     
     clickMode = ''
 
-    lon = 90
+    lon = 0
     lat = 0
     phi = 0
     theta = 0
@@ -44,6 +44,7 @@ export class Controls {
     preTargetPosi
     preLookAtPosi
     lookAtObjPosi
+    tPosi = new THREE.Vector3()
 
 
     constructor( camera, renderer, scene, size, onPtMove, onPtChoose, onPtHide, startObj, aimObj, targetObj, followObj, loodAtObjs ) {
@@ -71,10 +72,11 @@ export class Controls {
         this.centerPosi = new THREE.Vector3(0, 0, 0)
         this.followPosi = new THREE.Vector3()
 
-        this.cameraFromFollowDist = 0.001
+        this.cameraFromFollowDist = this.followObj.distCameraFromTarget
 
         this.isMobile = Utils.checkMobile()
         this.isDragging = false
+       
 
         gsap.registerPlugin()
 
@@ -82,7 +84,7 @@ export class Controls {
 
     update(){
 
-        //this.followObj.lookAt( this.targetObj.position )
+        this.followObj.lookAt( this.targetObj.goPosi )
 
         this.lon += (this.targetLon - this.lon) * 0.05
 		this.lat += (this.targetLat - this.lat) * 0.05
@@ -91,19 +93,27 @@ export class Controls {
         this.phi = THREE.MathUtils.degToRad( 90 - this.lat )
 		this.theta = THREE.MathUtils.degToRad( this.lon )
 
-        const targetPosiX = this.tempTargetPosi.x + ( this.cameraFromFollowDist * Math.sin( this.phi ) * Math.cos( this.theta ) )
-        const targetPosiY = this.tempTargetPosi.y + ( this.cameraFromFollowDist * Math.cos( this.phi ) )
-        const targetPosiZ = this.tempTargetPosi.z + ( this.cameraFromFollowDist * Math.sin( this.phi ) * Math.sin( this.theta ) )
+        const targetPosiX = ( this.cameraFromFollowDist * Math.sin( this.phi ) * Math.cos( this.theta ) )
+        const targetPosiY = ( this.cameraFromFollowDist * Math.cos( this.phi ) )
+        const targetPosiZ = ( this.cameraFromFollowDist * Math.sin( this.phi ) * Math.sin( this.theta ) )
 
         //const targetVec = new THREE.Vector3( targetPosiX, targetPosiY, targetPosiZ )
 
         //this.camera.position.lerp( targetVec, 0.1 )
         //this.camera.position.set( targetPosiX, targetPosiY, targetPosiZ )
-            
+        
+        this.followObj.followCube.position.x = targetPosiX
+		this.followObj.followCube.position.y = targetPosiY
+		this.followObj.followCube.position.z = targetPosiZ
 
-        this.camera.position.x = targetPosiX
-		this.camera.position.y = targetPosiY
-		this.camera.position.z = targetPosiZ
+        
+        this.followObj.followCube.getWorldPosition( this.tPosi )
+
+        //this.camera.position.x = targetPosiX
+		//this.camera.position.y = targetPosiY
+		//this.camera.position.z = targetPosiZ
+
+        this.camera.position.set( this.tPosi.x, this.tPosi.y, this.tPosi.z )
 
         //const d = this.followObj.position.distanceTo( targetVec )
         
@@ -125,11 +135,13 @@ export class Controls {
     
 
     initControls(){
-
+        const offsetStartY = 30
+        this.startObj.position.set( this.startObj.position.x, this.startObj.position.y - offsetStartY, this.startObj.position.z )
         this.centerPosi.set( 0, this.startObj.position.y, 0 )
         this.aimObj.position.set( this.startObj.position.x, this.startObj.position.y, this.startObj.position.z )
         this.followObj.position.set( this.startObj.position.x, this.startObj.position.y, this.startObj.position.z )
         this.tempTargetPosi = this.followObj.position
+        this.targetObj.goPosi = this.followObj.position
         this.targetObj.lookPosi = this.followObj.position
         this.followObj.lookAt( this.centerPosi )
         
@@ -138,7 +150,7 @@ export class Controls {
         this.camera.position.set( this.followObj.position.x, this.followObj.position.y, this.followObj.position.z )
         this.camera.lookAt( this.centerPosi )
 
-        this.initEvent()
+        //this.initEvent()
 
     }
 
@@ -146,6 +158,7 @@ export class Controls {
     initEvent(){
 
         //console.log( this.rayCasterObjs )
+        console.log("init event")
 
         let ele = document.getElementsByTagName( 'canvas' )[0];
 
@@ -183,6 +196,7 @@ export class Controls {
                     
                     this.offsetY = 0
                     this.tempTargetPosi = this.followObj.position
+                    this.targetObj.goPosi = this.followObj.position
                     this.targetObj.lookPosi = this.followObj.position
 
 
@@ -204,10 +218,13 @@ export class Controls {
                     const idStr = nameArr[ 1 ]
                     let id = parseInt( idStr )
 
-                    console.log(" Click ID: " + id)
+                    //console.log(" Click ID: " + id)
 
 
                     this.clickMode = 'obj'
+                    this.ptIsDown = false
+                    this.isDragging = false
+                    this.ptIsMove = false
 
                     //this.offsetY = 50
                     
@@ -220,8 +237,10 @@ export class Controls {
 
 
                     this.tempTargetPosi = this.followObj.position
-                    
                     //this.lookAtObjPosi = this.followObj.position
+
+
+                    //console.log( "hit 2" )
 
 
                     
@@ -365,11 +384,11 @@ export class Controls {
 
     ptUp( event ){
 
-        console.log( this.ptIsMove )
+        //console.log( this.ptIsMove )
 
 
         if( !this.ptIsMove ){
-            console.log( 'Hit' )
+            //console.log( 'Hit' )
             this.checkHit( "Down" )
         }
 

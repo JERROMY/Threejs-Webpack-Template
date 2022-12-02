@@ -24,12 +24,14 @@ export class TargetHelper extends THREE.Group {
         
         super()
 
-        this.distCameraFromTarget = 55
+        this.distCameraFromTarget = 30
+        this.distCameraFromTarget2 = this.distCameraFromTarget/2
         this.aimTarget = new THREE.AxesHelper( 20 )
         this.aimTarget.visible = true
         this.add( this.aimTarget )
         this.isStartMove = false
         this.lookPosi = new THREE.Vector3()
+        this.goPosi = new THREE.Vector3()
 
         
         this.aimCubeGeo = new THREE.BoxGeometry( 3, 3, 3 )
@@ -43,6 +45,12 @@ export class TargetHelper extends THREE.Group {
         this.add( this.followCube )
         this.followCube.visible = isHideFollow
         this.followCube.position.set( 0, 0, -this.distCameraFromTarget )
+
+        this.followGeo2 = new THREE.BoxGeometry( 5, 5, 5 )
+        this.followMat2 = new THREE.MeshBasicMaterial( { color: 0xffff00 } )
+        this.followCube2 = new THREE.Mesh( this.followGeo2, this.followMat2 )
+        this.add( this.followCube2 )
+        this.followCube2.position.set( 0, 0, -this.distCameraFromTarget2 )
         
 
     }
@@ -56,7 +64,8 @@ export class TargetFollowHelper extends THREE.Group {
         
         super()
         
-        this.distCameraFromTarget = 1
+        this.distCameraFromTarget = 0.01
+        //this.distCameraFromTarget2 = 40
         this.aimTarget = new THREE.AxesHelper( 10 )
         this.aimTarget.visible = true
         this.add( this.aimTarget )
@@ -70,7 +79,13 @@ export class TargetFollowHelper extends THREE.Group {
         this.followMat = new THREE.MeshBasicMaterial( { color: 0xff00ff } )
         this.followCube = new THREE.Mesh( this.followGeo, this.followMat )
         this.add( this.followCube )
-        this.followCube.position.set( 0, 0, -this.distCameraFromTarget )
+        this.followCube.position.set( 0, 0, this.distCameraFromTarget )
+
+        // this.followGeo2 = new THREE.BoxGeometry( 5, 5, 5 )
+        // this.followMat2 = new THREE.MeshBasicMaterial( { color: 0xffff00 } )
+        // this.followCube2 = new THREE.Mesh( this.followGeo2, this.followMat2 )
+        // this.add( this.followCube2 )
+        // this.followCube2.position.set( 0, 0, this.distCameraFromTarget2 )
         
 
     }
@@ -124,7 +139,11 @@ export class SceneMgr extends THREE.Group {
         this.follow_tween = null
         this.followWorldPosi = new THREE.Vector3()
         
-        
+        this.lookPosi2 = new THREE.Vector3()
+
+        this.hitMode = ''
+        this.tempHit = -1
+        this.objID = -1
 
     }
 
@@ -263,8 +282,13 @@ export class SceneMgr extends THREE.Group {
 
     hitSel( intersect, controlStatus ){
 
+        //console.log("hit")
+
+        this.hitMode = 'obj'
+
         const targetObj = this.targetHelper
         const startObj = this.startObj
+        const followObj = this.followHelper
 
         this.aim.visible = false
 
@@ -272,24 +296,50 @@ export class SceneMgr extends THREE.Group {
         const nameArr = hitObjName.split( '_' )
         const preStr = nameArr[ 0 ]
         const idStr = nameArr[ 1 ]
-        let id = parseInt( idStr )
+        this.objID = parseInt( idStr )
+        
         //console.log( id )
 
-        const lookPosi = new THREE.Vector3( this.lookAtObjs[ id ].position.x, startObj.position.y, this.lookAtObjs[ id ].position.z )
-
-        if(id > 9){
-            id = 10
-        }
-
-        const hitPt = this.pts[ id ].position
-        const hitPosi = new THREE.Vector3( hitPt.x, startObj.position.y, hitPt.z )
-        targetObj.lookAt( lookPosi )
-        targetObj.position.set( hitPosi.x, hitPosi.y, hitPosi.z )
-        targetObj.followCube.getWorldPosition( this.followWorldPosi )
-        targetObj.lookPosi = targetObj.position
+        const lookPosi = new THREE.Vector3( this.lookAtObjs[ this.objID ].position.x, startObj.position.y, this.lookAtObjs[ this.objID ].position.z )
         
 
+
+        if(this.objID > 9){
+            this.objID = 10
+        }
+
+        
+        const hitPt = this.pts[ this.objID ].position
+        const hitPosi = new THREE.Vector3( hitPt.x, startObj.position.y, hitPt.z )
+        targetObj.position.set( hitPosi.x, hitPosi.y, hitPosi.z )
+
+        
+        //targetObj.goPosi = hitPosi
+        targetObj.lookAt( lookPosi )
+        
+        targetObj.followCube.getWorldPosition( this.followWorldPosi )
+        targetObj.lookPosi = targetObj.position
+
+        //targetObj.followCube2.getWorldPosition( this.lookPosi2 )
+        //targetObj.goPosi = this.lookPosi2
+        
+        if( this.objID != this.tempHit ){
+
+            
+
+            this.tempHit = this.objID
+            console.log( "Not Same: " + this.objID + " " + this.tempHit )
+            
+            
+        }else{
+
+
+            console.log( "Same: " + this.objID + " " + this.tempHit )
+        }
+
+        //this.tempHit = this.objID
         this.startMoveFollow()
+        
         
 
 
@@ -325,6 +375,9 @@ export class SceneMgr extends THREE.Group {
 
 
             this.aim.visible = true
+
+            //const hitPosi = new THREE.Vector3( p.x, startObj.position.y, p.z )
+            //targetObj.goPosi = hitPosi
             targetObj.position.set( p.x, startObj.position.y, p.z )
             targetObj.followCube.getWorldPosition( this.followWorldPosi )
 
@@ -354,7 +407,7 @@ export class SceneMgr extends THREE.Group {
             }else if( hitType == "Down" ){
                 
                 this.aim.visible = true
-
+                this.hitMode = 'floor'
                 this.startMoveFollow()
                 
             
@@ -371,6 +424,7 @@ export class SceneMgr extends THREE.Group {
 
     startMoveFollow(){
 
+
         const targetObj = this.targetHelper
         //const startObj = this.startObj
         const followObj = this.followHelper
@@ -385,8 +439,8 @@ export class SceneMgr extends THREE.Group {
             x: this.followWorldPosi.x, 
             y: this.followWorldPosi.y, 
             z: this.followWorldPosi.z, 
-            duration: 2.0, 
-            ease: "cubic.inout", 
+            duration: 1.2, 
+            ease: "sine.inOut", 
             onComplete: this.followObjMoveFinish, 
             onCompleteParams: [ this ], 
             onUpdate: this.followObjMoveUpdate, 
@@ -401,6 +455,9 @@ export class SceneMgr extends THREE.Group {
 
         self.targetHelper.isStartMove = false
         self.followHelper.position.set( self.aimHelper.position.x, self.aimHelper.position.y, self.aimHelper.position.z )
+        
+
+
         //self.ptIsDown = false
         //self.isDragging = false
         //self.ptIsMove = false
@@ -409,6 +466,13 @@ export class SceneMgr extends THREE.Group {
     followObjMoveUpdate( self ){
 
         self.followHelper.position.set( self.aimHelper.position.x, self.aimHelper.position.y, self.aimHelper.position.z )
+
+        //self.followHelper.lookAt( self.targetHelper.goPosi )
+        if( self.hitMode == 'obj' ){
+            
+            //self.targetHelper.lookPosi = self.lookPosi2
+        }
+        
 
     }
 
