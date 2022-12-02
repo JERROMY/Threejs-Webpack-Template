@@ -9,7 +9,6 @@ export class Controls {
     rayCasterObjs = []
 
     pointer = new THREE.Vector2()
-    distCameraFromTarget = 0.01
 
     ptIsDown = false
     ptIsUp = false
@@ -72,7 +71,7 @@ export class Controls {
         this.centerPosi = new THREE.Vector3(0, 0, 0)
         this.followPosi = new THREE.Vector3()
 
-        this.cameraFromFollowDist = 10
+        this.cameraFromFollowDist = 0.001
 
         this.isMobile = Utils.checkMobile()
         this.isDragging = false
@@ -83,7 +82,7 @@ export class Controls {
 
     update(){
 
-        this.followObj.lookAt( this.targetObj.position )
+        //this.followObj.lookAt( this.targetObj.position )
 
         this.lon += (this.targetLon - this.lon) * 0.05
 		this.lat += (this.targetLat - this.lat) * 0.05
@@ -110,7 +109,7 @@ export class Controls {
         
 
         const startRotation = this.camera.quaternion.clone()
-        const lookAtVec = new THREE.Vector3( this.lookAtObjPosi.x, this.lookAtObjPosi.y + this.offsetY, this.lookAtObjPosi.z  )
+        const lookAtVec = new THREE.Vector3( this.targetObj.lookPosi.x, this.targetObj.lookPosi.y + this.offsetY, this.targetObj.lookPosi.z  )
         this.camera.lookAt( lookAtVec )
         const endRotation = this.camera.quaternion.clone()
         this.camera.applyQuaternion(startRotation)
@@ -131,7 +130,7 @@ export class Controls {
         this.aimObj.position.set( this.startObj.position.x, this.startObj.position.y, this.startObj.position.z )
         this.followObj.position.set( this.startObj.position.x, this.startObj.position.y, this.startObj.position.z )
         this.tempTargetPosi = this.followObj.position
-        this.lookAtObjPosi = this.followObj.position
+        this.targetObj.lookPosi = this.followObj.position
         this.followObj.lookAt( this.centerPosi )
         
 
@@ -184,10 +183,10 @@ export class Controls {
                     
                     this.offsetY = 0
                     this.tempTargetPosi = this.followObj.position
-                    this.lookAtObjPosi = this.followObj.position
+                    this.targetObj.lookPosi = this.followObj.position
 
-                    
 
+                    this.targetObj.isStartMove = false
                     this.delegate.onPtChoose( intersect, 'floor', this.isDragging )
                     //this.startMoveFollow()
                     
@@ -221,13 +220,15 @@ export class Controls {
 
 
                     this.tempTargetPosi = this.followObj.position
-                    //this.lookAtObjPosi = new THREE.Vector3( this.lookAtObjs[ id ].position.x, this.startObj.position.y, this.lookAtObjs[ id ].position.z )
-                    this.lookAtObjPosi = this.followObj.position
+                    
+                    //this.lookAtObjPosi = this.followObj.position
 
 
                     
                     //this.startMoveFollow()
+                    this.targetObj.isStartMove = true
                     this.delegate.onPtChoose( intersect, 'obj' )
+                    
                     
 
                     
@@ -259,14 +260,29 @@ export class Controls {
     onPointerMove( event ) {
 
         //event.preventDefault()
+
+
+        // if( this.targetObj.isStartMove ){
+
+        //     return
+
+        // }
         
         this.rayCastPointer( event )
-        this.ptMove( event )
+            this.ptMove( event )
+        
     
         
     }
     
     onPointerDown( event ) {
+
+
+        // if( this.targetObj.isStartMove ){
+
+        //     return
+
+        // }
 
         this.rayCastPointer( event )
 
@@ -282,6 +298,12 @@ export class Controls {
     }
     
     onPointerUp( event ) {
+
+        // if( this.targetObj.isStartMove ){
+
+        //     return
+
+        // }
         
         this.rayCastPointer( event )
         this.ptUp( event )
@@ -297,12 +319,12 @@ export class Controls {
 
         if( this.ptIsDown ){
 
-            // if( this.clickMode == 'obj' ){
-            //     //this.tempTargetPosi = this.followObj.position
-            //     this.clickMode = ''
-            //     this.offsetY = 0
-            //     this.lookAtObjPosi = this.followObj.position
-            // }
+            if( this.clickMode == 'obj' ){
+                //this.tempTargetPosi = this.followObj.position
+                this.clickMode = ''
+                this.offsetY = 0
+                this.targetObj.lookPosi = this.followObj.position
+            }
 
 
             this.targetLon = ( this.onPointerDownPointerX - event.clientX ) * 0.15 + this.onPointerDownLon

@@ -19,20 +19,30 @@ export class Aim extends THREE.Group {
 
 export class TargetHelper extends THREE.Group {
 
-    constructor( color ) {
+    constructor( color, isHideFollow ) {
 
-        //this.distCameraFromTarget = 40
         
         super()
+
+        this.distCameraFromTarget = 55
         this.aimTarget = new THREE.AxesHelper( 20 )
         this.aimTarget.visible = true
         this.add( this.aimTarget )
+        this.isStartMove = false
+        this.lookPosi = new THREE.Vector3()
 
         
-        this.aimCubeGeo = new THREE.BoxGeometry( 10, 10, 10 )
+        this.aimCubeGeo = new THREE.BoxGeometry( 3, 3, 3 )
         this.aimCubeMat = new THREE.MeshBasicMaterial( { color: color } )
         this.aimCube = new THREE.Mesh( this.aimCubeGeo, this.aimCubeMat )
         this.add( this.aimCube )
+
+        this.followGeo = new THREE.BoxGeometry( 5, 5, 5 )
+        this.followMat = new THREE.MeshBasicMaterial( { color: 0xff00ff } )
+        this.followCube = new THREE.Mesh( this.followGeo, this.followMat )
+        this.add( this.followCube )
+        this.followCube.visible = isHideFollow
+        this.followCube.position.set( 0, 0, -this.distCameraFromTarget )
         
 
     }
@@ -45,15 +55,22 @@ export class TargetFollowHelper extends THREE.Group {
     constructor( color ) {
         
         super()
-
+        
+        this.distCameraFromTarget = 1
         this.aimTarget = new THREE.AxesHelper( 10 )
         this.aimTarget.visible = true
         this.add( this.aimTarget )
 
-        this.aimCubeGeo = new THREE.BoxGeometry( 5, 5, 5 )
+        this.aimCubeGeo = new THREE.BoxGeometry( 3, 3, 3 )
         this.aimCubeMat = new THREE.MeshBasicMaterial( { color: color } )
         this.aimCube = new THREE.Mesh( this.aimCubeGeo, this.aimCubeMat )
         this.add( this.aimCube )
+
+        this.followGeo = new THREE.BoxGeometry( 5, 5, 5 )
+        this.followMat = new THREE.MeshBasicMaterial( { color: 0xff00ff } )
+        this.followCube = new THREE.Mesh( this.followGeo, this.followMat )
+        this.add( this.followCube )
+        this.followCube.position.set( 0, 0, -this.distCameraFromTarget )
         
 
     }
@@ -74,11 +91,11 @@ export class SceneMgr extends THREE.Group {
         this.followHelper.position.set( 0, 0, 0 )
         this.add( this.followHelper )
 
-        this.targetHelper = new TargetHelper( 0xff0000 )
+        this.targetHelper = new TargetHelper( 0xff0000, true )
         this.targetHelper.position.set( 0, 1000, 0 )
         this.add( this.targetHelper )
 
-        this.aimHelper = new TargetHelper( 0x00ff00 )
+        this.aimHelper = new TargetHelper( 0x00ff00, false )
         this.aimHelper.position.set( 0, 500, 0 )
         this.add( this.aimHelper )
 
@@ -96,6 +113,8 @@ export class SceneMgr extends THREE.Group {
         this.lookAtObjs = []
         this.floorObjs = []
         this.selectObjs = []
+        this.moveToPosi = null
+
 
         this.resourcesObj = null
         this.aim = null
@@ -103,6 +122,8 @@ export class SceneMgr extends THREE.Group {
         this.centerObj = null
         this.isMobile = Utils.checkMobile()
         this.follow_tween = null
+        this.followWorldPosi = new THREE.Vector3()
+        
         
 
     }
@@ -116,7 +137,7 @@ export class SceneMgr extends THREE.Group {
             // called when resource is loaded
             function ( object ) {
 
-                console.log( object )
+                //console.log( object )
 
                 self.resourcesObj = object.getObjectByName("resources")
                 console.log( self.resourcesObj )
@@ -254,13 +275,19 @@ export class SceneMgr extends THREE.Group {
         let id = parseInt( idStr )
         //console.log( id )
 
+        const lookPosi = new THREE.Vector3( this.lookAtObjs[ id ].position.x, startObj.position.y, this.lookAtObjs[ id ].position.z )
+
         if(id > 9){
             id = 10
         }
 
         const hitPt = this.pts[ id ].position
-
-        targetObj.position.set( hitPt.x, startObj.position.y, hitPt.z )
+        const hitPosi = new THREE.Vector3( hitPt.x, startObj.position.y, hitPt.z )
+        targetObj.lookAt( lookPosi )
+        targetObj.position.set( hitPosi.x, hitPosi.y, hitPosi.z )
+        targetObj.followCube.getWorldPosition( this.followWorldPosi )
+        targetObj.lookPosi = targetObj.position
+        
 
         this.startMoveFollow()
         
@@ -299,6 +326,10 @@ export class SceneMgr extends THREE.Group {
 
             this.aim.visible = true
             targetObj.position.set( p.x, startObj.position.y, p.z )
+            targetObj.followCube.getWorldPosition( this.followWorldPosi )
+
+            
+
             this.aim.position.set( p.x, p.y+this.aimDist, p.z )
 
             if( hitType == "Move" ){
@@ -343,33 +374,41 @@ export class SceneMgr extends THREE.Group {
         const targetObj = this.targetHelper
         //const startObj = this.startObj
         const followObj = this.followHelper
+        const aimObj = this.aimHelper
 
         if(this.follow_tween != null){
             this.follow_tween.kill()
         }
 
-        this.follow_tween = gsap.to( followObj.position, {
-            x: targetObj.position.x, 
-            y: targetObj.position.y, 
-            z: targetObj.position.z, 
+        this.follow_tween = gsap.to( aimObj.position, {
+
+            x: this.followWorldPosi.x, 
+            y: this.followWorldPosi.y, 
+            z: this.followWorldPosi.z, 
             duration: 2.0, 
             ease: "cubic.inout", 
             onComplete: this.followObjMoveFinish, 
             onCompleteParams: [ this ], 
             onUpdate: this.followObjMoveUpdate, 
             onUpdateParams: [ this ]
+        
         })
         
 
     }
 
     followObjMoveFinish( self ){
+
+        self.targetHelper.isStartMove = false
+        self.followHelper.position.set( self.aimHelper.position.x, self.aimHelper.position.y, self.aimHelper.position.z )
         //self.ptIsDown = false
         //self.isDragging = false
         //self.ptIsMove = false
     }
 
     followObjMoveUpdate( self ){
+
+        self.followHelper.position.set( self.aimHelper.position.x, self.aimHelper.position.y, self.aimHelper.position.z )
 
     }
 
