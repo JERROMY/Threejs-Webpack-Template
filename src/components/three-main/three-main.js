@@ -165,7 +165,7 @@ class ThreeMain {
     }
 
     moveCameraFovComplete( p ){
-        p.controls.initEvent()
+        //p.controls.initEvent()
     }
 
     moveCameraFovUpdate( p ){

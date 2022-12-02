@@ -142,7 +142,7 @@ export class Controls {
         this.followObj.position.set( this.startObj.position.x, this.startObj.position.y, this.startObj.position.z )
         this.tempTargetPosi = this.followObj.position
         this.targetObj.goPosi = this.followObj.position
-        this.targetObj.lookPosi = this.centerPosi
+        this.targetObj.lookPosi = this.followObj.position
         //this.followObj.lookAt( this.targetObj.goPosi )
         
 
@@ -150,7 +150,7 @@ export class Controls {
         this.camera.position.set( this.followObj.position.x, this.followObj.position.y, this.followObj.position.z )
         this.camera.lookAt( new THREE.Vector3( this.centerPosi.x, this.centerPosi.y, this.centerPosi.z ) )
 
-        //this.initEvent()
+        this.initEvent()
 
     }
 
@@ -342,6 +342,9 @@ export class Controls {
 
         if( this.ptIsDown ){
 
+
+           //console.log( 'Drag' )
+
             if( this.clickMode == 'obj' ){
                 //this.tempTargetPosi = this.followObj.position
                 this.clickMode = ''
@@ -350,8 +353,8 @@ export class Controls {
             }
 
 
-            this.targetLon = ( this.onPointerDownPointerX - event.clientX ) * 0.15 + this.onPointerDownLon
-            this.targetLat = ( this.onPointerDownPointerY - event.clientY ) * 0.15 + this.onPointerDownLat
+            this.targetLon = ( this.onPointerDownPointerX - event.clientX ) * 0.2 + this.onPointerDownLon
+            this.targetLat = ( this.onPointerDownPointerY - event.clientY ) * 0.2 + this.onPointerDownLat
 
             
             const offset2D = new THREE.Vector2( this.targetLon, this.targetLat )
@@ -384,7 +387,7 @@ export class Controls {
         
         this.ptIsDown = true
         this.ptIsMove = false
-        //console.log( 'Down' )
+        
         //console.log(" PT Down ")
 
         

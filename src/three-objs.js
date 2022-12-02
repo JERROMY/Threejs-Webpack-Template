@@ -331,16 +331,18 @@ export class SceneMgr extends THREE.Group {
 
             this.tempHit = this.objID
             console.log( "Not Same: " + this.objID + " " + this.tempHit )
+            this.startMoveFollow( true )
             
             
         }else{
 
 
             console.log( "Same: " + this.objID + " " + this.tempHit )
+            this.startMoveFollow( false )
         }
 
         //this.tempHit = this.objID
-        this.startMoveFollow()
+        
         
         
 
@@ -410,7 +412,7 @@ export class SceneMgr extends THREE.Group {
                 
                 this.aim.visible = true
                 this.hitMode = 'floor'
-                this.startMoveFollow()
+                this.startMoveFollow( false )
                 
             
             }else{
@@ -424,7 +426,9 @@ export class SceneMgr extends THREE.Group {
         
     }
 
-    startMoveFollow(){
+    startMoveFollow( isSame ){
+
+        //console.log( isSame )
 
 
         const targetObj = this.targetHelper
