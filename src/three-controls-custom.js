@@ -188,7 +188,11 @@ export class Controls {
 
                 if(hitType == 'Move' ){
 
-                    this.delegate.onPtMove( intersect, this.isDragging )
+                    if( this.clickMode != "obj" ){
+                        this.delegate.onPtMove( intersect, this.isDragging )
+                    }
+
+                    
                 
                 }else if( hitType == 'Down' ){
                     
@@ -278,14 +282,14 @@ export class Controls {
 
     onPointerMove( event ) {
 
-        //event.preventDefault()
+       // event.preventDefault()
 
 
-        // if( this.targetObj.isStartMove ){
+        if( this.targetObj.isStartMove ){
 
-        //     return
+            return
 
-        // }
+        }
         
         this.rayCastPointer( event )
             this.ptMove( event )
@@ -297,11 +301,11 @@ export class Controls {
     onPointerDown( event ) {
 
 
-        // if( this.targetObj.isStartMove ){
+        if( this.targetObj.isStartMove ){
 
-        //     return
+            return
 
-        // }
+        }
 
         this.rayCastPointer( event )
 
@@ -318,11 +322,11 @@ export class Controls {
     
     onPointerUp( event ) {
 
-        // if( this.targetObj.isStartMove ){
+        if( this.targetObj.isStartMove ){
 
-        //     return
+            return
 
-        // }
+        }
         
         this.rayCastPointer( event )
         this.ptUp( event )
@@ -333,7 +337,7 @@ export class Controls {
 
         //console.log( event )
 
-        //this.ptIsMove = true
+        this.ptIsMove = true
         //this.ptIsDown = false
 
         if( this.ptIsDown ){
@@ -352,7 +356,7 @@ export class Controls {
             
             const offset2D = new THREE.Vector2( this.targetLon, this.targetLat )
             const d = offset2D.length()
-            if( d > 30 ){
+            if( d > 10 ){
                 this.isDragging = true
                 this.ptIsMove = true
             }else{
@@ -362,7 +366,13 @@ export class Controls {
         
         }
 
+        // if( !this.clickMode != 'obj' ){
+
+        //     this.checkHit( 'Move' )
+        // }
+
         this.checkHit( 'Move' )
+        
 
         //console.log( "Move" )
         

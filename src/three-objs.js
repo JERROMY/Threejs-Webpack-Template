@@ -24,7 +24,7 @@ export class TargetHelper extends THREE.Group {
         
         super()
 
-        this.distCameraFromTarget = 30
+        this.distCameraFromTarget = 80
         this.distCameraFromTarget2 = this.distCameraFromTarget/2
         this.aimTarget = new THREE.AxesHelper( 20 )
         this.aimTarget.visible = true
@@ -144,6 +144,8 @@ export class SceneMgr extends THREE.Group {
         this.hitMode = ''
         this.tempHit = -1
         this.objID = -1
+
+        this.hitPosi = new THREE.Vector3()
 
     }
 
@@ -297,7 +299,7 @@ export class SceneMgr extends THREE.Group {
         const preStr = nameArr[ 0 ]
         const idStr = nameArr[ 1 ]
         this.objID = parseInt( idStr )
-        
+
         //console.log( id )
 
         const lookPosi = new THREE.Vector3( this.lookAtObjs[ this.objID ].position.x, startObj.position.y, this.lookAtObjs[ this.objID ].position.z )
@@ -310,15 +312,15 @@ export class SceneMgr extends THREE.Group {
 
         
         const hitPt = this.pts[ this.objID ].position
-        const hitPosi = new THREE.Vector3( hitPt.x, startObj.position.y, hitPt.z )
-        targetObj.position.set( hitPosi.x, hitPosi.y, hitPosi.z )
+        this.hitPosi = new THREE.Vector3( hitPt.x, startObj.position.y, hitPt.z )
+        targetObj.position.set( this.hitPosi.x, this.hitPosi.y, this.hitPosi.z )
 
         
         //targetObj.goPosi = hitPosi
         targetObj.lookAt( lookPosi )
         
         targetObj.followCube.getWorldPosition( this.followWorldPosi )
-        targetObj.lookPosi = targetObj.position
+        targetObj.lookPosi = this.hitPosi
 
         //targetObj.followCube2.getWorldPosition( this.lookPosi2 )
         //targetObj.goPosi = this.lookPosi2
