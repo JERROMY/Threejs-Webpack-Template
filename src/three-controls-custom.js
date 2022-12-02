@@ -84,7 +84,7 @@ export class Controls {
 
     update(){
 
-        this.followObj.lookAt( this.targetObj.goPosi )
+        //this.followObj.lookAt( this.targetObj.goPosi )
 
         this.lon += (this.targetLon - this.lon) * 0.05
 		this.lat += (this.targetLat - this.lat) * 0.05
@@ -142,13 +142,13 @@ export class Controls {
         this.followObj.position.set( this.startObj.position.x, this.startObj.position.y, this.startObj.position.z )
         this.tempTargetPosi = this.followObj.position
         this.targetObj.goPosi = this.followObj.position
-        this.targetObj.lookPosi = this.followObj.position
-        this.followObj.lookAt( this.centerPosi )
+        this.targetObj.lookPosi = this.centerPosi
+        //this.followObj.lookAt( this.targetObj.goPosi )
         
 
 
         this.camera.position.set( this.followObj.position.x, this.followObj.position.y, this.followObj.position.z )
-        this.camera.lookAt( this.centerPosi )
+        this.camera.lookAt( new THREE.Vector3( this.centerPosi.x, this.centerPosi.y, this.centerPosi.z ) )
 
         //this.initEvent()
 
