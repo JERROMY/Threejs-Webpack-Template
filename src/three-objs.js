@@ -117,7 +117,9 @@ export class SceneMgr extends THREE.Group {
         this.followHelper.visible = this.aimHelper.visible = this.targetHelper.visible = false
         
         this.loader = new THREE.ObjectLoader()
-        this.totalSize = 102858737
+        this.totalSize = 103907821
+
+
         this.delegate = {
             onProcess: onProcess,
             onFinish: onFinish,
@@ -189,7 +191,7 @@ export class SceneMgr extends THREE.Group {
                 self.delegate.onProcess( percent )
                 
                 //console.log( percent )
-                //console.log( xhr )
+                //console.log( xhr.loaded )
                 //console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
 
             },
@@ -230,6 +232,11 @@ export class SceneMgr extends THREE.Group {
                         self.centerObj = obj
                     }
                     
+                }
+
+                if( obj.parent.name == 'selected' ){
+                    const mat = self.selectObjs[0].material.clone()
+                    obj.material = mat
                 }
 
                 if( obj.name.indexOf( 'floor' ) != -1 ){

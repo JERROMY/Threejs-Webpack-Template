@@ -68,6 +68,19 @@ class ThreeMain {
         this.scene.visible = false
         this.scene.background = new THREE.Color( 0x000000 );
         this.scene.add( this.camera )
+
+        this.skyTexturePath = this.threeData.SceneBg
+
+        this.skyLoader = new THREE.CubeTextureLoader();
+        this.skyTexture = this.skyLoader.load([
+            this.skyTexturePath.px,
+            this.skyTexturePath.nx,
+            this.skyTexturePath.py,
+            this.skyTexturePath.ny,
+            this.skyTexturePath.pz,
+            this.skyTexturePath.nz,
+        ]);
+        
     
 
         // this.sphere = new THREE.Mesh( new THREE.IcosahedronGeometry( 100, 8 ), this.cubeMat );
@@ -155,6 +168,7 @@ class ThreeMain {
     moveCameraComplete( p ){
 
         p.camera.rotation.y = 0
+        p.scene.background = p.skyTexture;
         p.init()
         p.isLoading = true
         p.threeData.LoadingDiv.hide()

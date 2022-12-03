@@ -4,6 +4,14 @@ import * as THREE from 'three'
 import BasicVS from './components/three-main/shaders/basic/basicColor.vert'
 import BasicFS from './components/three-main/shaders/basic/basicColor.frag'
 
+import nx from './images/nx.png'
+import ny from './images/ny.png'
+import nz from './images/nz.png'
+import px from './images/px.png'
+import py from './images/py.png'
+import pz from './images/pz.png'
+
+
 
 import SceneDataPath from './data/main_scene.json'
 
@@ -28,6 +36,15 @@ class ThreeData {
 
     SceneDataPath = SceneDataPath
     LoadingDiv
+
+    SceneBg = {
+        'nx': nx,
+        'ny': ny,
+        'nz': nz,
+        'px': px,
+        'py': py,
+        'pz': pz
+    }
     
 
     constructor(){

@@ -67,7 +67,7 @@ module.exports = {
                 type: 'asset/resource',
                 generator:
                 {
-                    filename: 'data/[name][ext]'
+                    filename: 'data/[name][hash][ext]'
                 }, 
                 parser: {
                     dataUrlCondition: {
