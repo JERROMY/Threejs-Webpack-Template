@@ -26,7 +26,7 @@ export class Controls {
     
     clickMode = ''
 
-    lon = 0
+    lon = 90
     lat = 0
     phi = 0
     theta = 0

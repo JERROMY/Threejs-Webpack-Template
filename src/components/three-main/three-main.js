@@ -145,7 +145,7 @@ class ThreeMain {
             x: 0, 
             y: Math.PI/2, 
             z: 0, 
-            duration: 2.0, 
+            duration: 0.8, 
             ease: "cubic.inout", 
             onComplete: this.moveCameraComplete, 
             onCompleteParams: [ this ],
